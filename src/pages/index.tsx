@@ -250,18 +250,9 @@ export default function Home() {
 
                     {/* Upload Queue */}
                     {uploadQueue.state.jobs.length > 0 && (
-                      <div
-                        className="rounded-lg border p-6 shadow-sm"
-                        style={{
-                          backgroundColor: "var(--card)",
-                          borderColor: "var(--border)",
-                        }}
-                      >
+                      <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
                         <div className="mb-4 flex items-center justify-between">
-                          <h2
-                            className="font-semibold text-xl"
-                            style={{ color: "var(--foreground)" }}
-                          >
+                          <h2 className="font-semibold text-xl text-foreground">
                             Upload Queue
                           </h2>
                           <div className="flex gap-2">
@@ -297,75 +288,39 @@ export default function Home() {
 
                         {/* Queue Statistics */}
                         <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-4">
-                          <div
-                            className="rounded-lg p-3 text-center"
-                            style={{ backgroundColor: "var(--muted)" }}
-                          >
-                            <div
-                              className="font-bold text-2xl"
-                              style={{ color: "var(--foreground)" }}
-                            >
+                          <div className="rounded-lg bg-muted p-3 text-center">
+                            <div className="font-bold text-2xl text-foreground">
                               {uploadQueue.state.totalJobs}
                             </div>
-                            <div
-                              className="text-sm"
-                              style={{ color: "var(--muted-foreground)" }}
-                            >
+                            <div className="text-sm text-muted-foreground">
                               Total Jobs
                             </div>
                           </div>
-                          <div
-                            className="rounded-lg p-3 text-center"
-                            style={{ backgroundColor: "var(--accent)" }}
-                          >
-                            <div
-                              className="font-bold text-2xl"
-                              style={{ color: "var(--primary)" }}
-                            >
+                          <div className="rounded-lg bg-accent p-3 text-center">
+                            <div className="font-bold text-2xl text-primary">
                               {
                                 uploadQueue.state.jobs.filter(
                                   (job) => job.status === "pending",
                                 ).length
                               }
                             </div>
-                            <div
-                              className="text-sm"
-                              style={{ color: "var(--accent-foreground)" }}
-                            >
+                            <div className="text-sm text-accent-foreground">
                               Pending
                             </div>
                           </div>
-                          <div
-                            className="rounded-lg p-3 text-center"
-                            style={{ backgroundColor: "var(--accent)" }}
-                          >
-                            <div
-                              className="font-bold text-2xl"
-                              style={{ color: "var(--primary)" }}
-                            >
+                          <div className="rounded-lg bg-accent p-3 text-center">
+                            <div className="font-bold text-2xl text-primary">
                               {uploadQueue.state.completedJobs}
                             </div>
-                            <div
-                              className="text-sm"
-                              style={{ color: "var(--accent-foreground)" }}
-                            >
+                            <div className="text-sm text-accent-foreground">
                               Completed
                             </div>
                           </div>
-                          <div
-                            className="rounded-lg p-3 text-center"
-                            style={{ backgroundColor: "var(--destructive)" }}
-                          >
-                            <div
-                              className="font-bold text-2xl"
-                              style={{ color: "var(--destructive-foreground)" }}
-                            >
+                          <div className="rounded-lg bg-destructive p-3 text-center">
+                            <div className="font-bold text-2xl text-destructive-foreground">
                               {uploadQueue.state.failedJobs}
                             </div>
-                            <div
-                              className="text-sm"
-                              style={{ color: "var(--destructive-foreground)" }}
-                            >
+                            <div className="text-sm text-destructive-foreground">
                               Failed
                             </div>
                           </div>
@@ -454,18 +409,9 @@ export default function Home() {
 
                     {/* Queue Monitoring */}
                     {uploadQueue.state.completedJobs > 0 && (
-                      <div
-                        className="rounded-lg border p-6 shadow-sm"
-                        style={{
-                          backgroundColor: "var(--card)",
-                          borderColor: "var(--border)",
-                        }}
-                      >
+                      <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
                         <div className="mb-4 flex items-center justify-between">
-                          <h2
-                            className="font-semibold text-xl"
-                            style={{ color: "var(--foreground)" }}
-                          >
+                          <h2 className="font-semibold text-xl text-foreground">
                             Background Processing Status
                           </h2>
                           <Button
@@ -493,23 +439,11 @@ export default function Home() {
                   </>
                 ) : (
                   /* Representation Tab */
-                  <div
-                    className="rounded-lg border p-6 shadow-sm"
-                    style={{
-                      backgroundColor: "var(--card)",
-                      borderColor: "var(--border)",
-                    }}
-                  >
-                    <h2
-                      className="mb-4 font-semibold text-xl"
-                      style={{ color: "var(--foreground)" }}
-                    >
+                  <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+                    <h2 className="mb-4 font-semibold text-xl text-foreground">
                       AI Representations
                     </h2>
-                    <p
-                      className="mb-6"
-                      style={{ color: "var(--muted-foreground)" }}
-                    >
+                    <p className="mb-6 text-muted-foreground">
                       Query and view AI representations from Honcho. Enter a
                       peer ID to see what the AI remembers.
                     </p>
