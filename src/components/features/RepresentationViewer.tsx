@@ -10,8 +10,6 @@ import { cn } from "~/lib/utils"
 
 interface RepresentationViewerProps {
   apiKey: string
-  peerId: string
-  targetPeerId?: string
   workspaceId?: string
   environment?: "local" | "production" | "demo"
   className?: string
@@ -44,7 +42,7 @@ function RepresentationContent({
       return (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h4 className="font-medium text-gray-900 capitalize">
+            <h4 className="font-medium text-foreground capitalize">
               {key.replace(/_/g, " ")}
             </h4>
             <Button
@@ -58,7 +56,7 @@ function RepresentationContent({
           </div>
           <ul className="list-inside list-disc space-y-1 pl-4">
             {value.map((item, index) => (
-              <li key={index} className="text-gray-700 text-sm">
+              <li key={index} className="text-muted-foreground text-sm">
                 {String(item)}
               </li>
             ))}
@@ -71,7 +69,7 @@ function RepresentationContent({
       return (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h4 className="font-medium text-gray-900 capitalize">
+            <h4 className="font-medium text-foreground capitalize">
               {key.replace(/_/g, " ")}
             </h4>
             <Button
@@ -83,7 +81,7 @@ function RepresentationContent({
               {copiedKey === key ? "Copied!" : "Copy"}
             </Button>
           </div>
-          <p className="whitespace-pre-wrap text-gray-700 text-sm">{value}</p>
+          <p className="whitespace-pre-wrap text-muted-foreground text-sm">{value}</p>
         </div>
       )
     }
@@ -92,7 +90,7 @@ function RepresentationContent({
       return (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h4 className="font-medium text-gray-900 capitalize">
+            <h4 className="font-medium text-foreground capitalize">
               {key.replace(/_/g, " ")}
             </h4>
             <Button
@@ -106,7 +104,7 @@ function RepresentationContent({
               {copiedKey === key ? "Copied!" : "Copy"}
             </Button>
           </div>
-          <pre className="overflow-auto rounded bg-gray-50 p-3 text-xs">
+          <pre className="overflow-auto rounded bg-muted p-3 text-xs">
             {JSON.stringify(value, null, 2)}
           </pre>
         </div>
@@ -128,7 +126,7 @@ function RepresentationContent({
             {copiedKey === key ? "Copied!" : "Copy"}
           </Button>
         </div>
-        <p className="text-gray-700 text-sm">{String(value)}</p>
+        <p className="text-muted-foreground text-sm">{String(value)}</p>
       </div>
     )
   }
@@ -136,7 +134,7 @@ function RepresentationContent({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-gray-900 text-lg">
+        <h3 className="font-semibold text-foreground text-lg">
           Working Representation
         </h3>
         <Button
@@ -162,7 +160,7 @@ function RepresentationContent({
         </Button>
       </div>
 
-      <div className="divide-y rounded-lg border bg-white">
+      <div className="divide-y rounded-lg border border-border bg-card">
         {Object.entries(representation).map(([key, value]) => (
           <div key={key} className="p-4">
             {renderValue(key, value)}
@@ -175,8 +173,6 @@ function RepresentationContent({
 
 export function RepresentationViewer({
   apiKey,
-  peerId,
-  targetPeerId,
   workspaceId,
   environment,
   className,
@@ -193,8 +189,7 @@ export function RepresentationViewer({
   const handleGetRepresentation = async () => {
     await fetchRepresentation({
       apiKey,
-      peerId,
-      targetPeerId,
+      peerId: "user",
       workspaceId,
       environment,
     })
@@ -204,8 +199,7 @@ export function RepresentationViewer({
     if (representation) {
       await fetchRepresentation({
         apiKey,
-        peerId,
-        targetPeerId,
+        peerId: "user",
         workspaceId,
         environment,
       })
@@ -216,9 +210,9 @@ export function RepresentationViewer({
     <div className={cn("space-y-4", className)}>
       {!representation && !isLoading && (
         <div className="py-8 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
             <svg
-              className="h-6 w-6 text-blue-600"
+              className="h-6 w-6 text-primary"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -231,12 +225,11 @@ export function RepresentationViewer({
               />
             </svg>
           </div>
-          <h3 className="mb-2 font-semibold text-gray-900 text-lg">
+          <h3 className="mb-2 font-semibold text-foreground text-lg">
             Get Working Representation
           </h3>
-          <p className="mx-auto mb-6 max-w-md text-gray-600 text-sm">
-            Retrieve the working representation for peer "{peerId}"
-            {targetPeerId && ` about "${targetPeerId}"`}
+          <p className="mx-auto mb-6 max-w-md text-muted-foreground text-sm">
+            Get a working representation of you based on your uploaded conversations.
           </p>
           <Button onClick={handleGetRepresentation} disabled={!apiKey}>
             Get Representation
@@ -247,10 +240,10 @@ export function RepresentationViewer({
       {isLoading && (
         <div className="py-8 text-center">
           <LoadingSpinner size="lg" className="mx-auto mb-4" />
-          <h3 className="mb-2 font-semibold text-gray-900 text-lg">
+          <h3 className="mb-2 font-semibold text-foreground text-lg">
             Fetching Representation...
           </h3>
-          <p className="text-gray-600 text-sm">
+          <p className="text-muted-foreground text-sm">
             This may take a moment while we process your data
           </p>
         </div>
@@ -280,7 +273,7 @@ export function RepresentationViewer({
       {representation && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <div className="text-gray-600 text-sm">
+            <div className="text-muted-foreground text-sm">
               {lastFetched && (
                 <span>Last updated: {lastFetched.toLocaleString()}</span>
               )}

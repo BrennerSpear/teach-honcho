@@ -171,7 +171,7 @@ export default function Home() {
               className={`rounded-lg border bg-card p-8 shadow-sm ${isConnected ? "border-2 border-primary" : "border-border"}`}
             >
               {isConnected && (
-                <div className="mb-4 flex items-center gap-2 rounded-lg border border-border bg-muted p-3">
+                <div className="mb-4 flex items-center gap-2 rounded-lg border border-green-200 p-3">
                   <div className="h-2 w-2 rounded-full bg-green-400" />
                   <span className="font-medium text-green-800 text-sm">
                     Connected to Honcho
@@ -463,12 +463,11 @@ export default function Home() {
                       AI Representations
                     </h2>
                     <p className="mb-6 text-muted-foreground">
-                      Query and view AI representations from Honcho. Enter a
-                      peer ID to see what the AI remembers.
+                      View AI representations from Honcho based on your uploaded
+                      conversations.
                     </p>
                     <RepresentationViewer
                       apiKey={apiKey}
-                      peerId=""
                       workspaceId="teach-honcho"
                       environment="production"
                     />
@@ -525,10 +524,10 @@ export default function Home() {
                       <div
                         className={`h-2 w-2 rounded-full ${
                           connectionStatus.testing
-                            ? "bg-secondary"
+                            ? "bg-yellow-400"
                             : isConnected
-                              ? "bg-primary"
-                              : "bg-destructive"
+                              ? "bg-green-400"
+                              : "bg-red-400"
                         }`}
                       />
                       <span className="text-muted-foreground text-sm">
