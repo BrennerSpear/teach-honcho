@@ -33,23 +33,12 @@ export default function Home() {
     autoTest: false,
   })
 
-  // Test connection when API key loads from localStorage
+  // Test connection when API key loads from localStorage (but not when it changes)
   useEffect(() => {
     if (isLoaded && apiKey) {
-      setTimeout(() => testConnection(), 100)
+      testConnection()
     }
-  }, [isLoaded, apiKey, testConnection])
-
-  // Auto-close dialog when successfully connected
-  useEffect(() => {
-    if (isApiKeyDialogOpen && isConnected && apiKey) {
-      const timer = setTimeout(() => {
-        setIsApiKeyDialogOpen(false)
-        setTempApiKey("")
-      }, 500)
-      return () => clearTimeout(timer)
-    }
-  }, [isApiKeyDialogOpen, isConnected, apiKey])
+  }, [isLoaded, testConnection])
 
   // Upload queue management
   const uploadQueue = useUploadQueue({
@@ -67,11 +56,12 @@ export default function Home() {
     },
   })
 
-  const handleSetApiKey = () => {
+  const handleSetApiKey = async () => {
     if (tempApiKey.trim()) {
-      saveApiKey(tempApiKey.trim())
-      // Test connection after setting API key
-      setTimeout(() => testConnection(), 100)
+      const newKey = tempApiKey.trim()
+      saveApiKey(newKey)
+      // Test connection immediately with the new key value
+      await testConnection(newKey)
     }
   }
 
@@ -429,7 +419,13 @@ export default function Home() {
             )}
 
             {/* API Key Dialog */}
-            <Dialog open={isApiKeyDialogOpen} onOpenChange={setIsApiKeyDialogOpen}>
+            <Dialog open={isApiKeyDialogOpen} onOpenChange={(open) => {
+              if (!open) {
+                handleCloseApiKeyDialog()
+              } else {
+                setIsApiKeyDialogOpen(true)
+              }
+            }}>
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Honcho API Configuration</DialogTitle>
@@ -480,16 +476,6 @@ export default function Home() {
                               ? "Connection failed"
                               : "Not tested"}
                       </span>
-                      {!connectionStatus.testing && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={testConnection}
-                          className="ml-auto"
-                        >
-                          {connectionStatus.testedAt ? "Retest" : "Test"}
-                        </Button>
-                      )}
                     </div>
                   )}
 

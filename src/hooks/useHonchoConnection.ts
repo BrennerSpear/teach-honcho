@@ -31,8 +31,9 @@ export function useHonchoConnection(options: UseHonchoConnectionOptions = {}) {
   // Extract stable values from options to avoid infinite loops
   const { apiKey, workspaceId, environment, autoTest, retestInterval } = options
 
-  const testConnection = useCallback(async () => {
-    if (!apiKey) {
+  const testConnection = useCallback(async (testApiKey?: string) => {
+    const keyToTest = testApiKey || apiKey
+    if (!keyToTest) {
       setStatus({
         connected: false,
         apiKeyValid: false,
@@ -46,7 +47,7 @@ export function useHonchoConnection(options: UseHonchoConnectionOptions = {}) {
 
     try {
       const result = await utils.chat.checkConnection.fetch({
-        apiKey,
+        apiKey: keyToTest,
         workspaceId,
         environment,
       })
