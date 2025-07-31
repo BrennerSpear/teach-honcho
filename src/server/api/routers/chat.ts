@@ -159,7 +159,7 @@ export const chatRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       try {
-        // Test connection by trying to create a test peer
+        // Test connection by trying to query a test peer
         const testPeerId = `test-${Date.now()}`
         const result = await getWorkingRepresentation({
           peerId: testPeerId,
@@ -168,16 +168,31 @@ export const chatRouter = createTRPCRouter({
           environment: input.environment,
         })
 
+        console.log("result", result)
+
+        // If the call succeeded, the API key is valid
+        if (result.success) {
+          return {
+            connected: true,
+            apiKeyValid: true,
+            testedAt: new Date().toISOString(),
+          }
+        }
+
         return {
-          connected: true,
-          apiKeyValid: result.success || result.message !== "Unauthorized",
+          connected: result.success,
+          apiKeyValid: result.success,
+          error: result.message,
           testedAt: new Date().toISOString(),
         }
       } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error"
+
         return {
-          connected: false,
+          connected: false, // If it's an auth error, we did connect but key is invalid
           apiKeyValid: false,
-          error: error instanceof Error ? error.message : "Unknown error",
+          error: errorMessage,
           testedAt: new Date().toISOString(),
         }
       }

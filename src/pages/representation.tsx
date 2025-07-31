@@ -117,9 +117,9 @@ export default function RepresentationPage() {
               ) : (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <div>
+                    <div className="mr-4 min-w-0 flex-1">
                       <p className="text-gray-600 text-sm">Current API Key:</p>
-                      <p className="rounded bg-gray-100 px-2 py-1 font-mono text-sm">
+                      <p className="overflow-hidden text-ellipsis whitespace-nowrap rounded bg-gray-100 px-2 py-1 font-mono text-sm">
                         {getObfuscatedKey()}
                       </p>
                     </div>
