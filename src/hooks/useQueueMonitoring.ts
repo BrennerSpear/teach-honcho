@@ -65,18 +65,28 @@ export function useQueueMonitoring(options: QueueMonitoringOptions) {
       setStatus(queueStatus)
       setError(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to check queue status")
+      setError(
+        err instanceof Error ? err.message : "Failed to check queue status",
+      )
     }
-  }, [options.apiKey, options.workspaceId, options.environment, options.observerId, options.senderId, options.sessionId, utils])
+  }, [
+    options.apiKey,
+    options.workspaceId,
+    options.environment,
+    options.observerId,
+    options.senderId,
+    options.sessionId,
+    utils,
+  ])
 
   const startMonitoring = useCallback(() => {
     if (intervalRef.current) return // Already monitoring
 
     const pollInterval = options.pollInterval || 5000 // Default 5 seconds
-    
+
     // Initial check
     checkQueueStatus()
-    
+
     // Set up polling
     intervalRef.current = setInterval(checkQueueStatus, pollInterval)
   }, [checkQueueStatus, options.pollInterval])

@@ -98,7 +98,9 @@ export function useFileProcessor() {
           ...prev,
           isProcessing: false,
           processedChats: result.data,
-          originalChatCount: Array.isArray(result.data) ? result.data.length : 1,
+          originalChatCount: Array.isArray(result.data)
+            ? result.data.length
+            : 1,
         }))
 
         return {

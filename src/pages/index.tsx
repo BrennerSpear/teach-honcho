@@ -150,9 +150,9 @@ export default function Home() {
           <div className="mx-auto max-w-5xl space-y-6">
             <div className="rounded-lg border border-border bg-card p-8 shadow-sm">
               {isConnected && (
-                <div className="mb-4 flex items-center gap-2 rounded-lg border border-primary bg-primary p-3">
-                  <div className="h-2 w-2 rounded-full bg-primary-foreground" />
-                  <span className="font-medium text-primary-foreground text-sm">
+                <div className="mb-4 flex items-center gap-2 rounded-lg border border-border bg-muted p-3">
+                  <div className="h-2 w-2 rounded-full bg-green-400" />
+                  <span className="font-medium text-foreground text-sm">
                     Connected to Honcho
                   </span>
                 </div>
@@ -252,7 +252,7 @@ export default function Home() {
                     {uploadQueue.state.jobs.length > 0 && (
                       <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
                         <div className="mb-4 flex items-center justify-between">
-                          <h2 className="font-semibold text-xl text-foreground">
+                          <h2 className="font-semibold text-foreground text-xl">
                             Upload Queue
                           </h2>
                           <div className="flex gap-2">
@@ -292,7 +292,7 @@ export default function Home() {
                             <div className="font-bold text-2xl text-foreground">
                               {uploadQueue.state.totalJobs}
                             </div>
-                            <div className="text-sm text-muted-foreground">
+                            <div className="text-muted-foreground text-sm">
                               Total Jobs
                             </div>
                           </div>
@@ -304,7 +304,7 @@ export default function Home() {
                                 ).length
                               }
                             </div>
-                            <div className="text-sm text-accent-foreground">
+                            <div className="text-accent-foreground text-sm">
                               Pending
                             </div>
                           </div>
@@ -312,7 +312,7 @@ export default function Home() {
                             <div className="font-bold text-2xl text-primary">
                               {uploadQueue.state.completedJobs}
                             </div>
-                            <div className="text-sm text-accent-foreground">
+                            <div className="text-accent-foreground text-sm">
                               Completed
                             </div>
                           </div>
@@ -320,7 +320,7 @@ export default function Home() {
                             <div className="font-bold text-2xl text-destructive-foreground">
                               {uploadQueue.state.failedJobs}
                             </div>
-                            <div className="text-sm text-destructive-foreground">
+                            <div className="text-destructive-foreground text-sm">
                               Failed
                             </div>
                           </div>
@@ -411,7 +411,7 @@ export default function Home() {
                     {uploadQueue.state.completedJobs > 0 && (
                       <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
                         <div className="mb-4 flex items-center justify-between">
-                          <h2 className="font-semibold text-xl text-foreground">
+                          <h2 className="font-semibold text-foreground text-xl">
                             Background Processing Status
                           </h2>
                           <Button
@@ -440,7 +440,7 @@ export default function Home() {
                 ) : (
                   /* Representation Tab */
                   <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-                    <h2 className="mb-4 font-semibold text-xl text-foreground">
+                    <h2 className="mb-4 font-semibold text-foreground text-xl">
                       AI Representations
                     </h2>
                     <p className="mb-6 text-muted-foreground">

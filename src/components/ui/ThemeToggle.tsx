@@ -1,7 +1,7 @@
 "use client"
 
-import * as React from "react"
 import { useTheme } from "next-themes"
+import * as React from "react"
 import { Button } from "~/components/ui/Button"
 
 export function ThemeToggle() {
@@ -15,11 +15,7 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <Button
-        variant="outline"
-        size="sm"
-        className="h-9 w-9 p-0"
-      >
+      <Button variant="outline" size="sm" className="h-9 w-9 p-0">
         <span className="sr-only">Toggle theme</span>
         <div className="h-4 w-4" />
       </Button>

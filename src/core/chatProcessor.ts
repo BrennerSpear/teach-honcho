@@ -30,7 +30,7 @@ export function processChatData(jsonData: UnknownJsonData): ProcessChatResult {
     // Handle different input formats
     if (Array.isArray(jsonData)) {
       const firstItem = jsonData[0]
-      
+
       // Check if array contains ChatGPT conversation objects
       if (
         firstItem &&
@@ -50,7 +50,7 @@ export function processChatData(jsonData: UnknownJsonData): ProcessChatResult {
             })
           }
         }
-        
+
         if (conversationResults.length === 0) {
           return {
             success: false,
@@ -69,24 +69,35 @@ export function processChatData(jsonData: UnknownJsonData): ProcessChatResult {
           if (!item || typeof item !== "object") {
             throw new Error("Invalid message item in array")
           }
-          
+
           // Support different property name formats
           let author: string
           let content: string
-          
-          if (typeof item.author === "string" && typeof item.content === "string") {
+
+          if (
+            typeof item.author === "string" &&
+            typeof item.content === "string"
+          ) {
             author = item.author
             content = item.content
-          } else if (typeof item.role === "string" && typeof item.content === "string") {
+          } else if (
+            typeof item.role === "string" &&
+            typeof item.content === "string"
+          ) {
             author = item.role
             content = item.content
-          } else if (typeof item.from === "string" && typeof item.text === "string") {
+          } else if (
+            typeof item.from === "string" &&
+            typeof item.text === "string"
+          ) {
             author = item.from
             content = item.text
           } else {
-            throw new Error(`Message item missing required properties. Found keys: [${Object.keys(item).join(', ')}]`)
+            throw new Error(
+              `Message item missing required properties. Found keys: [${Object.keys(item).join(", ")}]`,
+            )
           }
-          
+
           return { author, content }
         })
         originalFormat = "array"
@@ -132,7 +143,6 @@ export function validateChatGPTExport(jsonData: UnknownJsonData): {
     return { valid: false, message: "Data must be a JSON object" }
   }
 
-
   // Check for ChatGPT export structure first (single conversation object)
   if (
     typeof jsonData === "object" &&
@@ -152,7 +162,7 @@ export function validateChatGPTExport(jsonData: UnknownJsonData): {
     }
 
     const firstItem = jsonData[0]
-    
+
     // Check if array contains ChatGPT conversation objects (with mapping structure)
     if (
       firstItem &&
@@ -160,7 +170,10 @@ export function validateChatGPTExport(jsonData: UnknownJsonData): {
       "mapping" in firstItem &&
       typeof (firstItem as any).mapping === "object"
     ) {
-      return { valid: true, message: "Valid array of ChatGPT conversation objects" }
+      return {
+        valid: true,
+        message: "Valid array of ChatGPT conversation objects",
+      }
     }
 
     // Check for direct message objects (simple array format)
@@ -168,9 +181,12 @@ export function validateChatGPTExport(jsonData: UnknownJsonData): {
       (item) =>
         item &&
         typeof item === "object" &&
-        ((typeof (item as any).author === "string" && typeof (item as any).content === "string") ||
-         (typeof (item as any).role === "string" && typeof (item as any).content === "string") ||
-         (typeof (item as any).from === "string" && typeof (item as any).text === "string"))
+        ((typeof (item as any).author === "string" &&
+          typeof (item as any).content === "string") ||
+          (typeof (item as any).role === "string" &&
+            typeof (item as any).content === "string") ||
+          (typeof (item as any).from === "string" &&
+            typeof (item as any).text === "string")),
     )
 
     if (hasValidMessages) {
@@ -178,11 +194,12 @@ export function validateChatGPTExport(jsonData: UnknownJsonData): {
     }
 
     // Provide more detailed error information
-    const itemKeys = firstItem && typeof firstItem === "object" ? Object.keys(firstItem) : []
-    
+    const itemKeys =
+      firstItem && typeof firstItem === "object" ? Object.keys(firstItem) : []
+
     return {
       valid: false,
-      message: `Array does not contain valid message objects or ChatGPT conversation objects. First item has keys: [${itemKeys.join(', ')}]. Expected either ChatGPT objects (with 'mapping') or message objects with 'author'+'content', 'role'+'content', or 'from'+'text'.`,
+      message: `Array does not contain valid message objects or ChatGPT conversation objects. First item has keys: [${itemKeys.join(", ")}]. Expected either ChatGPT objects (with 'mapping') or message objects with 'author'+'content', 'role'+'content', or 'from'+'text'.`,
     }
   }
 

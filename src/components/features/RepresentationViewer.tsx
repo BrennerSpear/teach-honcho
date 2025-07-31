@@ -17,7 +17,11 @@ interface RepresentationViewerProps {
   className?: string
 }
 
-function RepresentationContent({ representation }: { representation: WorkingRepresentation }) {
+function RepresentationContent({
+  representation,
+}: {
+  representation: WorkingRepresentation
+}) {
   const [copiedKey, setCopiedKey] = useState<string | null>(null)
 
   const copyToClipboard = async (text: string, key: string) => {
@@ -52,7 +56,7 @@ function RepresentationContent({ representation }: { representation: WorkingRepr
               {copiedKey === key ? "Copied!" : "Copy"}
             </Button>
           </div>
-          <ul className="list-disc list-inside space-y-1 pl-4">
+          <ul className="list-inside list-disc space-y-1 pl-4">
             {value.map((item, index) => (
               <li key={index} className="text-gray-700 text-sm">
                 {String(item)}
@@ -79,7 +83,7 @@ function RepresentationContent({ representation }: { representation: WorkingRepr
               {copiedKey === key ? "Copied!" : "Copy"}
             </Button>
           </div>
-          <p className="text-gray-700 text-sm whitespace-pre-wrap">{value}</p>
+          <p className="whitespace-pre-wrap text-gray-700 text-sm">{value}</p>
         </div>
       )
     }
@@ -94,13 +98,15 @@ function RepresentationContent({ representation }: { representation: WorkingRepr
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => copyToClipboard(JSON.stringify(value, null, 2), key)}
+              onClick={() =>
+                copyToClipboard(JSON.stringify(value, null, 2), key)
+              }
               className="h-6 px-2 text-xs"
             >
               {copiedKey === key ? "Copied!" : "Copy"}
             </Button>
           </div>
-          <pre className="bg-gray-50 rounded p-3 text-xs overflow-auto">
+          <pre className="overflow-auto rounded bg-gray-50 p-3 text-xs">
             {JSON.stringify(value, null, 2)}
           </pre>
         </div>
@@ -130,7 +136,7 @@ function RepresentationContent({ representation }: { representation: WorkingRepr
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">
+        <h3 className="font-semibold text-gray-900 text-lg">
           Working Representation
         </h3>
         <Button
@@ -139,7 +145,12 @@ function RepresentationContent({ representation }: { representation: WorkingRepr
           onClick={copyFullRepresentation}
           className="flex items-center gap-2"
         >
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -151,7 +162,7 @@ function RepresentationContent({ representation }: { representation: WorkingRepr
         </Button>
       </div>
 
-      <div className="bg-white rounded-lg border divide-y">
+      <div className="divide-y rounded-lg border bg-white">
         {Object.entries(representation).map(([key, value]) => (
           <div key={key} className="p-4">
             {renderValue(key, value)}
@@ -170,7 +181,14 @@ export function RepresentationViewer({
   environment,
   className,
 }: RepresentationViewerProps) {
-  const { isLoading, error, representation, lastFetched, fetchRepresentation, reset } = useRepresentation()
+  const {
+    isLoading,
+    error,
+    representation,
+    lastFetched,
+    fetchRepresentation,
+    reset,
+  } = useRepresentation()
 
   const handleGetRepresentation = async () => {
     await fetchRepresentation({
@@ -197,8 +215,8 @@ export function RepresentationViewer({
   return (
     <div className={cn("space-y-4", className)}>
       {!representation && !isLoading && (
-        <div className="text-center py-8">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 mb-4">
+        <div className="py-8 text-center">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
             <svg
               className="h-6 w-6 text-blue-600"
               fill="none"
@@ -213,10 +231,10 @@ export function RepresentationViewer({
               />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <h3 className="mb-2 font-semibold text-gray-900 text-lg">
             Get Working Representation
           </h3>
-          <p className="text-gray-600 text-sm mb-6 max-w-md mx-auto">
+          <p className="mx-auto mb-6 max-w-md text-gray-600 text-sm">
             Retrieve the working representation for peer "{peerId}"
             {targetPeerId && ` about "${targetPeerId}"`}
           </p>
@@ -227,9 +245,9 @@ export function RepresentationViewer({
       )}
 
       {isLoading && (
-        <div className="text-center py-8">
+        <div className="py-8 text-center">
           <LoadingSpinner size="lg" className="mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <h3 className="mb-2 font-semibold text-gray-900 text-lg">
             Fetching Representation...
           </h3>
           <p className="text-gray-600 text-sm">
@@ -247,7 +265,11 @@ export function RepresentationViewer({
               <Button variant="outline" size="sm" onClick={reset}>
                 Clear
               </Button>
-              <Button variant="outline" size="sm" onClick={handleGetRepresentation}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleGetRepresentation}
+              >
                 Retry
               </Button>
             </div>
@@ -258,13 +280,18 @@ export function RepresentationViewer({
       {representation && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-600">
+            <div className="text-gray-600 text-sm">
               {lastFetched && (
                 <span>Last updated: {lastFetched.toLocaleString()}</span>
               )}
             </div>
             <Button variant="outline" size="sm" onClick={handleRefresh}>
-              <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="mr-2 h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"

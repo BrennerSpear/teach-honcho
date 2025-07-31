@@ -66,7 +66,12 @@ export function QueueMonitor({
 
   if (!status.isProcessing && status.totalWorkUnits === 0) {
     return (
-      <div className={cn("rounded-lg border border-gray-200 bg-gray-50 p-4", className)}>
+      <div
+        className={cn(
+          "rounded-lg border border-gray-200 bg-gray-50 p-4",
+          className,
+        )}
+      >
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100">
             <svg
@@ -85,9 +90,7 @@ export function QueueMonitor({
           </div>
           <div className="flex-1">
             <h3 className="font-medium text-gray-800">No Active Processing</h3>
-            <p className="text-gray-600 text-sm">
-              No work units in the queue
-            </p>
+            <p className="text-gray-600 text-sm">No work units in the queue</p>
           </div>
           <Button variant="ghost" size="sm" onClick={refresh}>
             <svg
@@ -111,7 +114,12 @@ export function QueueMonitor({
 
   if (!status.isProcessing && status.totalWorkUnits > 0) {
     return (
-      <div className={cn("rounded-lg border border-green-200 bg-green-50 p-4", className)}>
+      <div
+        className={cn(
+          "rounded-lg border border-green-200 bg-green-50 p-4",
+          className,
+        )}
+      >
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
             <svg
@@ -129,9 +137,13 @@ export function QueueMonitor({
             </svg>
           </div>
           <div className="flex-1">
-            <h3 className="font-medium text-green-800">Queue Processing Complete</h3>
+            <h3 className="font-medium text-green-800">
+              Queue Processing Complete
+            </h3>
             <div className="space-y-1 text-green-600 text-sm">
-              <p>All {status.totalWorkUnits} work units completed successfully</p>
+              <p>
+                All {status.totalWorkUnits} work units completed successfully
+              </p>
               <p className="text-xs">
                 Last updated: {status.lastUpdated.toLocaleTimeString()}
               </p>
@@ -158,42 +170,53 @@ export function QueueMonitor({
   }
 
   return (
-    <div className={cn("rounded-lg border border-blue-200 bg-blue-50 p-4", className)}>
+    <div
+      className={cn(
+        "rounded-lg border border-blue-200 bg-blue-50 p-4",
+        className,
+      )}
+    >
       <div className="flex items-center gap-3">
         <LoadingSpinner size="sm" className="text-blue-600" />
         <div className="flex-1">
-          <h3 className="font-medium text-blue-800">Processing in Background</h3>
+          <h3 className="font-medium text-blue-800">
+            Processing in Background
+          </h3>
           <div className="space-y-2">
             {/* Progress bar */}
             <div className="relative w-full">
-              <div className="overflow-hidden h-2 text-xs flex rounded bg-blue-200">
+              <div className="flex h-2 overflow-hidden rounded bg-blue-200 text-xs">
                 <div
                   style={{ width: `${status.percentComplete}%` }}
-                  className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600 transition-all duration-300"
+                  className="flex flex-col justify-center whitespace-nowrap bg-blue-600 text-center text-white shadow-none transition-all duration-300"
                 />
               </div>
-              <p className="text-blue-800 text-xs font-medium mt-1">
+              <p className="mt-1 font-medium text-blue-800 text-xs">
                 {status.percentComplete}% complete
               </p>
             </div>
-            
+
             {/* Work unit details */}
             <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-blue-600 text-sm">
               <div>
-                <span className="font-medium">Total:</span> {status.totalWorkUnits}
+                <span className="font-medium">Total:</span>{" "}
+                {status.totalWorkUnits}
               </div>
               <div>
-                <span className="font-medium">Completed:</span> {status.completedWorkUnits}
+                <span className="font-medium">Completed:</span>{" "}
+                {status.completedWorkUnits}
               </div>
               <div>
-                <span className="font-medium">In Progress:</span> {status.inProgressWorkUnits}
+                <span className="font-medium">In Progress:</span>{" "}
+                {status.inProgressWorkUnits}
               </div>
               <div>
-                <span className="font-medium">Pending:</span> {status.pendingWorkUnits}
+                <span className="font-medium">Pending:</span>{" "}
+                {status.pendingWorkUnits}
               </div>
             </div>
-            
-            <p className="text-xs text-blue-500">
+
+            <p className="text-blue-500 text-xs">
               Last updated: {status.lastUpdated.toLocaleTimeString()}
             </p>
           </div>

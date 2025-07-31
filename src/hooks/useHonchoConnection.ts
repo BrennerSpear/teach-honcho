@@ -31,45 +31,48 @@ export function useHonchoConnection(options: UseHonchoConnectionOptions = {}) {
   // Extract stable values from options to avoid infinite loops
   const { apiKey, workspaceId, environment, autoTest, retestInterval } = options
 
-  const testConnection = useCallback(async (testApiKey?: string) => {
-    const keyToTest = testApiKey || apiKey
-    if (!keyToTest) {
-      setStatus({
-        connected: false,
-        apiKeyValid: false,
-        testing: false,
-        error: "No API key provided",
-      })
-      return
-    }
+  const testConnection = useCallback(
+    async (testApiKey?: string) => {
+      const keyToTest = testApiKey || apiKey
+      if (!keyToTest) {
+        setStatus({
+          connected: false,
+          apiKeyValid: false,
+          testing: false,
+          error: "No API key provided",
+        })
+        return
+      }
 
-    setStatus((prev) => ({ ...prev, testing: true, error: undefined }))
+      setStatus((prev) => ({ ...prev, testing: true, error: undefined }))
 
-    try {
-      const result = await utils.chat.checkConnection.fetch({
-        apiKey: keyToTest,
-        workspaceId,
-        environment,
-      })
+      try {
+        const result = await utils.chat.checkConnection.fetch({
+          apiKey: keyToTest,
+          workspaceId,
+          environment,
+        })
 
-      setStatus({
-        connected: result.connected,
-        apiKeyValid: result.apiKeyValid,
-        testing: false,
-        error: result.error,
-        testedAt: result.testedAt,
-      })
-    } catch (error) {
-      setStatus({
-        connected: false,
-        apiKeyValid: false,
-        testing: false,
-        error:
-          error instanceof Error ? error.message : "Connection test failed",
-        testedAt: new Date().toISOString(),
-      })
-    }
-  }, [apiKey, workspaceId, environment, utils])
+        setStatus({
+          connected: result.connected,
+          apiKeyValid: result.apiKeyValid,
+          testing: false,
+          error: result.error,
+          testedAt: result.testedAt,
+        })
+      } catch (error) {
+        setStatus({
+          connected: false,
+          apiKeyValid: false,
+          testing: false,
+          error:
+            error instanceof Error ? error.message : "Connection test failed",
+          testedAt: new Date().toISOString(),
+        })
+      }
+    },
+    [apiKey, workspaceId, environment, utils],
+  )
 
   // Auto-test connection when API key changes
   useEffect(() => {
