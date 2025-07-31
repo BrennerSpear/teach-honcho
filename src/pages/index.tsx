@@ -77,12 +77,21 @@ export default function Home() {
 
   const handleFileProcessed = (result: {
     success: boolean
-    data?: ProcessedChat
+    data?: ProcessedChat | ProcessedChat[]
     error?: string
     warning?: string
   }) => {
     if (result.success && result.data) {
-      uploadQueue.addJob(result.data)
+      // Handle both single chat and array of chats
+      if (Array.isArray(result.data)) {
+        // Add each conversation as a separate job
+        for (const chat of result.data) {
+          uploadQueue.addJob(chat)
+        }
+      } else {
+        // Single conversation
+        uploadQueue.addJob(result.data)
+      }
     }
 
     if (result.error) {
@@ -146,9 +155,15 @@ export default function Home() {
                     1. Get Your Honcho API Key
                   </h3>
                   <p className="mb-4 text-gray-600">
-                    You'll need a Honcho API key to upload conversations. Contact
-                    your Honcho administrator or check your Honcho dashboard for
-                    your API key.
+                    You'll need a Honcho API key to upload conversations. Get your API key from{" "}
+                    <a 
+                      href="https://app.honcho.dev/api-keys" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-indigo-600 hover:text-indigo-800 underline"
+                    >
+                      app.honcho.dev/api-keys
+                    </a>.
                   </p>
                   <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 mb-4">
                     <p className="text-sm text-yellow-800">

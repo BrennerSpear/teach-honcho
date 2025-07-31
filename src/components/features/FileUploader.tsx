@@ -17,7 +17,7 @@ import { FileValidationWarning } from "./FileValidationWarning"
 interface FileUploaderProps {
   onFileProcessed?: (data: {
     success: boolean
-    data?: ProcessedChat
+    data?: ProcessedChat | ProcessedChat[]
     error?: string
     warning?: string
   }) => void

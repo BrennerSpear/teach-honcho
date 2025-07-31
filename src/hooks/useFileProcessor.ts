@@ -7,7 +7,7 @@ import type { ProcessedChat } from "~/core/chatProcessor"
 interface ProcessingState {
   isProcessing: boolean
   error: string | null
-  processedChats: ProcessedChat | null
+  processedChats: ProcessedChat | ProcessedChat[] | null
   originalChatCount: number
 }
 
@@ -97,8 +97,8 @@ export function useFileProcessor() {
         setState((prev) => ({
           ...prev,
           isProcessing: false,
-          processedChats: result.data as ProcessedChat,
-          originalChatCount: Array.isArray(jsonData) ? jsonData.length : 1,
+          processedChats: result.data,
+          originalChatCount: Array.isArray(result.data) ? result.data.length : 1,
         }))
 
         return {

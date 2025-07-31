@@ -15,7 +15,7 @@ export interface ProcessedChat {
 export interface ProcessChatResult {
   success: boolean
   message: string
-  data?: ProcessedChat
+  data?: ProcessedChat | ProcessedChat[]
 }
 
 /**
@@ -38,13 +38,31 @@ export function processChatData(jsonData: UnknownJsonData): ProcessChatResult {
         "mapping" in firstItem &&
         typeof (firstItem as any).mapping === "object"
       ) {
-        // Process array of ChatGPT conversation objects
-        messages = []
+        // Process array of ChatGPT conversation objects - each conversation separately
+        const conversationResults: ProcessedChat[] = []
         for (const chatObject of jsonData) {
           const chatMessages = extractVisibleMessages(chatObject as ChatJSON)
-          messages.push(...chatMessages)
+          if (chatMessages.length > 0) {
+            conversationResults.push({
+              messages: chatMessages,
+              messageCount: chatMessages.length,
+              originalFormat: "chatgpt",
+            })
+          }
         }
-        originalFormat = "array"
+        
+        if (conversationResults.length === 0) {
+          return {
+            success: false,
+            message: "No messages found in any conversations",
+          }
+        }
+
+        return {
+          success: true,
+          message: `Successfully processed ${conversationResults.length} conversations with ${conversationResults.reduce((total, conv) => total + conv.messageCount, 0)} total messages`,
+          data: conversationResults,
+        }
       } else {
         // Process array of direct message objects
         messages = jsonData.map((item: any) => {
