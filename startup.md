@@ -80,6 +80,9 @@ updates to `package.json` (overwrite check:unsafe with lint)
     "scripts": {
         "lint": "biome check --write --unsafe .",
         "precommit": "pnpm run typecheck &&pnpm run lint"
-    }
+    },
+    
 }
 ```
+
+install `tsx` as a dev dependency 

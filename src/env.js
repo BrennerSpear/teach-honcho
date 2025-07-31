@@ -8,6 +8,7 @@ export const env = createEnv({
    */
   server: {
     NODE_ENV: z.enum(["development", "test", "production"]),
+    HONCHO_API_KEY: z.string().optional(),
   },
 
   /**
@@ -25,6 +26,7 @@ export const env = createEnv({
    */
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
+    HONCHO_API_KEY: process.env.HONCHO_API_KEY,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
