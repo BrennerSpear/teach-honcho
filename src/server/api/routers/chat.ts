@@ -190,7 +190,8 @@ export const chatRouter = createTRPCRouter({
           error instanceof Error ? error.message : "Unknown error"
 
         // Check if it's an authentication error
-        const isAuthError = errorMessage.toLowerCase().includes("unauthorized") ||
+        const isAuthError =
+          errorMessage.toLowerCase().includes("unauthorized") ||
           errorMessage.toLowerCase().includes("api key") ||
           errorMessage.toLowerCase().includes("authentication")
 
@@ -210,7 +211,8 @@ export const chatRouter = createTRPCRouter({
       try {
         const client = new Honcho({
           apiKey: input.apiKey,
-          workspaceId: input.workspaceId || "teach-honcho-testing",
+          workspaceId: input.workspaceId || "teach-honcho",
+          // workspaceId: input.workspaceId || "teach-honcho-testing",
           environment: input.environment || "production",
         })
 
@@ -221,13 +223,18 @@ export const chatRouter = createTRPCRouter({
         })
 
         // Calculate processing status and percentage
-        const isProcessing = 
-          (deriverStatus.inProgressWorkUnits > 0) || 
-          (deriverStatus.pendingWorkUnits > 0)
-        
-        const percentComplete = deriverStatus.totalWorkUnits > 0
-          ? Math.round((deriverStatus.completedWorkUnits / deriverStatus.totalWorkUnits) * 100)
-          : 0
+        const isProcessing =
+          deriverStatus.inProgressWorkUnits > 0 ||
+          deriverStatus.pendingWorkUnits > 0
+
+        const percentComplete =
+          deriverStatus.totalWorkUnits > 0
+            ? Math.round(
+                (deriverStatus.completedWorkUnits /
+                  deriverStatus.totalWorkUnits) *
+                  100,
+              )
+            : 0
 
         return {
           isProcessing,

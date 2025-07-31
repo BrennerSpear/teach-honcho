@@ -4,4 +4,91 @@
   --font-sans:
     var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --color-background: var(--brand-base-dusty-white);
+  --color-foreground: var(--brand-font-light-mode);
+  --color-card: var(--brand-true-white);
+  --color-card-foreground: var(--brand-font-light-mode);
+  --color-popover: var(--brand-true-white);
+  --color-popover-foreground: var(--brand-font-light-mode);
+  --color-primary: var(--brand-dark-blue-primary);
+  --color-primary-hover: var(--brand-dark-blue-primary-hover);
+  --color-primary-foreground: var(--brand-true-white);
+  --color-secondary: var(--brand-base-dusty-white);
+  --color-secondary-hover: var(--brand-base-dusty-white-hover);
+  --color-secondary-foreground: var(--brand-font-light-mode);
+  --color-muted: var(--brand-base-dusty-white);
+  --color-muted-foreground: var(--brand-font-light-mode);
+  --color-accent: var(--brand-light-blue-accent);
+  --color-accent-hover: var(--brand-light-blue-accent-hover);
+  --color-accent-foreground: var(--brand-font-light-mode);
+  --color-destructive: var(--brand-burnt-orange-accent);
+  --color-destructive-hover: var(--brand-burnt-orange-accent-hover);
+  --color-destructive-foreground: var(--brand-true-white);
+  --color-border: var(--brand-base-dusty-white);
+  --color-input: var(--brand-true-white);
+  --color-ring: var(--brand-light-blue-accent);
+}
+
+:root {
+  /* Brand Color Variables */
+  --brand-true-black: #191919;
+  --brand-base-black: #191919;
+  --brand-font-light-mode: #191919;
+  --brand-dark-blue-deep: #151e27;
+  --brand-dark-blue-primary: #090a17;
+  --brand-dark-blue-primary-hover: #101444;
+  --brand-light-blue-accent: #b5daff;
+  --brand-light-blue-accent-hover: #d0e7ff;
+  --brand-light-blue-accent-active: #9ac9f2;
+  --brand-muted-teal: #b5d1cc;
+  --brand-muted-teal-hover: #c5dcd8;
+  --brand-muted-teal-active: #95b5af;
+  --brand-light-green-accent: #b5daff;
+  --brand-burnt-orange-accent: #df5f79;
+  --brand-burnt-orange-accent-hover: #c43d00;
+  --brand-true-white: #fff;
+  --brand-base-white: #fafafa;
+  --brand-base-dusty-white: #e2e2e2;
+  --brand-base-dusty-white-hover: #b9b9b9;
+  --brand-font-dark-mode: var(--brand-base-dusty-white);
+}
+
+.dark {
+  --color-background: var(--brand-dark-blue-primary);
+  --color-foreground: var(--brand-font-dark-mode);
+  --color-card: var(--brand-dark-blue-deep);
+  --color-card-foreground: var(--brand-font-dark-mode);
+  --color-popover: var(--brand-dark-blue-primary);
+  --color-popover-foreground: var(--brand-font-dark-mode);
+  --color-primary: var(--brand-muted-teal);
+  --color-primary-hover: var(--brand-muted-teal-hover);
+  --color-primary-foreground: var(--brand-dark-blue-deep);
+  --color-secondary: var(--brand-muted-teal);
+  --color-secondary-hover: var(--brand-muted-teal-hover);
+  --color-secondary-foreground: var(--brand-dark-blue-deep);
+  --color-muted: var(--brand-dark-blue-primary);
+  --color-muted-foreground: var(--brand-muted-teal);
+  --color-accent: var(--brand-light-blue-accent);
+  --color-accent-hover: var(--brand-muted-teal);
+  --color-accent-foreground: var(--brand-base-dusty-white-hover);
+  --color-destructive: var(--brand-burnt-orange-accent);
+  --color-destructive-hover: var(--brand-burnt-orange-accent-hover);
+  --color-destructive-foreground: var(--brand-true-white);
+  --color-border: var(--brand-muted-teal);
+  --color-input: var(--brand-dark-blue-primary);
+  --color-ring: var(--brand-light-blue-accent);
+}
+
+/* Base styles */
+* {
+  border-color: var(--color-border);
+}
+
+body {
+  color: var(--color-foreground);
+  background: var(--color-background);
+  transition:
+    background-color var(--ui-transition-speed) ease,
+    color var(--ui-transition-speed) ease;
 }

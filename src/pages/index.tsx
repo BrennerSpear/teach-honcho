@@ -5,9 +5,16 @@ import { QueueMonitor } from "~/components/features/QueueMonitor"
 import { RepresentationViewer } from "~/components/features/RepresentationViewer"
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/Alert"
 import { Button } from "~/components/ui/Button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "~/components/ui/Dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/Dialog"
 import { Input } from "~/components/ui/Input"
 import { Label } from "~/components/ui/Label"
+import { ThemeToggle } from "~/components/ui/ThemeToggle"
 import type { ProcessedChat } from "~/core/chatProcessor"
 import { useApiKey } from "~/hooks/useApiKey"
 import { useHonchoConnection } from "~/hooks/useHonchoConnection"
@@ -118,60 +125,67 @@ export default function Home() {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <main className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
-          {/* Header */}
-          <div className="mb-8 text-center">
-            <h1 className="mb-4 font-extrabold text-4xl text-gray-900 tracking-tight sm:text-5xl">
-              Honcho
-              <span className="text-indigo-600"> ChatGPT</span>
-              <br />
-              Uploader
-            </h1>
-            <p className="mx-auto max-w-2xl text-gray-600 text-lg">
-              Transform your ChatGPT conversations into persistent AI memories.
-              Upload your exports to Honcho and explore AI representations.
-            </p>
+          {/* Header with Theme Toggle */}
+          <div className="mb-8">
+            <div className="mb-4 flex justify-end">
+              <ThemeToggle />
+            </div>
+            <div className="text-center">
+              <h1 className="mb-4 font-extrabold text-4xl text-foreground tracking-tight sm:text-5xl">
+                Honcho
+                <span className="text-primary"> ChatGPT</span>
+                <br />
+                Uploader
+              </h1>
+              <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+                Transform your ChatGPT conversations into persistent AI
+                memories. Upload your exports to Honcho and explore AI
+                representations.
+              </p>
+            </div>
           </div>
 
           <div className="mx-auto max-w-5xl space-y-6">
-            {/* Getting Started - Now at the top */}
-            <div className={`rounded-lg bg-white p-8 shadow-sm ${isConnected ? 'border-2 border-green-200' : 'border'}`}>
+            <div className="rounded-lg border border-border bg-card p-8 shadow-sm">
               {isConnected && (
-                <div className="mb-4 flex items-center gap-2 rounded-lg bg-green-50 p-3">
-                  <div className="h-2 w-2 rounded-full bg-green-400" />
-                  <span className="font-medium text-green-800 text-sm">
+                <div className="mb-4 flex items-center gap-2 rounded-lg border border-primary bg-primary p-3">
+                  <div className="h-2 w-2 rounded-full bg-primary-foreground" />
+                  <span className="font-medium text-primary-foreground text-sm">
                     Connected to Honcho
                   </span>
                 </div>
               )}
-              
-              <h2 className="mb-6 font-bold text-2xl text-gray-900">
+
+              <h2 className="mb-6 font-bold text-2xl text-foreground">
                 Getting Started
               </h2>
               <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                 <div>
-                  <h3 className="mb-3 font-semibold text-gray-900 text-lg">
+                  <h3 className="mb-3 font-semibold text-foreground text-lg">
                     1. Get Your Honcho API Key
                   </h3>
-                  <p className="mb-4 text-gray-600">
-                    You'll need a Honcho API key to upload conversations. Get your API key from{" "}
-                    <a 
-                      href="https://app.honcho.dev/api-keys" 
-                      target="_blank" 
+                  <p className="mb-4 text-muted-foreground">
+                    You'll need a Honcho API key to upload conversations. Get
+                    your API key from{" "}
+                    <a
+                      href="https://app.honcho.dev/api-keys"
+                      target="_blank"
                       rel="noopener noreferrer"
-                      className="text-indigo-600 hover:text-indigo-800 underline"
+                      className="text-primary underline hover:no-underline"
                     >
                       app.honcho.dev/api-keys
-                    </a>.
+                    </a>
+                    .
                   </p>
-                  <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 mb-4">
-                    <p className="text-sm text-yellow-800">
+                  <div className="mb-4 rounded-lg border border-border bg-muted p-4">
+                    <p className="text-foreground text-sm">
                       <strong>Important:</strong> Keep your API key secure and
                       never share it publicly.
                     </p>
                   </div>
-                  <Button 
+                  <Button
                     onClick={handleOpenApiKeyDialog}
                     className="w-full sm:w-auto"
                   >
@@ -179,15 +193,15 @@ export default function Home() {
                   </Button>
                 </div>
                 <div>
-                  <h3 className="mb-3 font-semibold text-gray-900 text-lg">
+                  <h3 className="mb-3 font-semibold text-foreground text-lg">
                     2. Export from ChatGPT
                   </h3>
-                  <p className="mb-4 text-gray-600">
+                  <p className="mb-4 text-muted-foreground">
                     In ChatGPT, go to Settings → Data Export → Export data.
                     Download the conversations.json file from your export.
                   </p>
-                  <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-                    <p className="text-blue-800 text-sm">
+                  <div className="rounded-lg border border-border bg-muted p-4">
+                    <p className="text-foreground text-sm">
                       <strong>Note:</strong> Large files (over 50MB) will show a
                       warning but can still be processed.
                     </p>
@@ -200,23 +214,23 @@ export default function Home() {
             {apiKey && isConnected && (
               <>
                 {/* Tab Navigation */}
-                <div className="flex rounded-lg bg-white p-1 shadow-sm">
+                <div className="flex rounded-lg bg-card p-1 shadow-sm">
                   <button
                     onClick={() => setActiveTab("upload")}
-                    className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                    className={`flex-1 rounded-md px-4 py-2 font-medium text-sm transition-colors ${
                       activeTab === "upload"
-                        ? "bg-indigo-600 text-white"
-                        : "text-gray-600 hover:text-gray-900"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-transparent text-muted-foreground"
                     }`}
                   >
                     Upload Conversations
                   </button>
                   <button
                     onClick={() => setActiveTab("representation")}
-                    className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                    className={`flex-1 rounded-md px-4 py-2 font-medium text-sm transition-colors ${
                       activeTab === "representation"
-                        ? "bg-indigo-600 text-white"
-                        : "text-gray-600 hover:text-gray-900"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-transparent text-muted-foreground"
                     }`}
                   >
                     View Representations
@@ -227,8 +241,8 @@ export default function Home() {
                 {activeTab === "upload" ? (
                   <>
                     {/* File Upload Section */}
-                    <div className="rounded-lg border bg-white p-6 shadow-sm">
-                      <h2 className="mb-4 font-semibold text-gray-900 text-xl">
+                    <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+                      <h2 className="mb-4 font-semibold text-foreground text-xl">
                         Upload Files
                       </h2>
                       <FileUploader onFileProcessed={handleFileProcessed} />
@@ -236,9 +250,18 @@ export default function Home() {
 
                     {/* Upload Queue */}
                     {uploadQueue.state.jobs.length > 0 && (
-                      <div className="rounded-lg border bg-white p-6 shadow-sm">
+                      <div
+                        className="rounded-lg border p-6 shadow-sm"
+                        style={{
+                          backgroundColor: "var(--card)",
+                          borderColor: "var(--border)",
+                        }}
+                      >
                         <div className="mb-4 flex items-center justify-between">
-                          <h2 className="font-semibold text-gray-900 text-xl">
+                          <h2
+                            className="font-semibold text-xl"
+                            style={{ color: "var(--foreground)" }}
+                          >
                             Upload Queue
                           </h2>
                           <div className="flex gap-2">
@@ -274,37 +297,77 @@ export default function Home() {
 
                         {/* Queue Statistics */}
                         <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-4">
-                          <div className="rounded-lg bg-gray-50 p-3 text-center">
-                            <div className="font-bold text-2xl text-gray-900">
+                          <div
+                            className="rounded-lg p-3 text-center"
+                            style={{ backgroundColor: "var(--muted)" }}
+                          >
+                            <div
+                              className="font-bold text-2xl"
+                              style={{ color: "var(--foreground)" }}
+                            >
                               {uploadQueue.state.totalJobs}
                             </div>
-                            <div className="text-gray-600 text-sm">
+                            <div
+                              className="text-sm"
+                              style={{ color: "var(--muted-foreground)" }}
+                            >
                               Total Jobs
                             </div>
                           </div>
-                          <div className="rounded-lg bg-blue-50 p-3 text-center">
-                            <div className="font-bold text-2xl text-blue-600">
+                          <div
+                            className="rounded-lg p-3 text-center"
+                            style={{ backgroundColor: "var(--accent)" }}
+                          >
+                            <div
+                              className="font-bold text-2xl"
+                              style={{ color: "var(--primary)" }}
+                            >
                               {
                                 uploadQueue.state.jobs.filter(
                                   (job) => job.status === "pending",
                                 ).length
                               }
                             </div>
-                            <div className="text-gray-600 text-sm">Pending</div>
+                            <div
+                              className="text-sm"
+                              style={{ color: "var(--accent-foreground)" }}
+                            >
+                              Pending
+                            </div>
                           </div>
-                          <div className="rounded-lg bg-green-50 p-3 text-center">
-                            <div className="font-bold text-2xl text-green-600">
+                          <div
+                            className="rounded-lg p-3 text-center"
+                            style={{ backgroundColor: "var(--accent)" }}
+                          >
+                            <div
+                              className="font-bold text-2xl"
+                              style={{ color: "var(--primary)" }}
+                            >
                               {uploadQueue.state.completedJobs}
                             </div>
-                            <div className="text-gray-600 text-sm">
+                            <div
+                              className="text-sm"
+                              style={{ color: "var(--accent-foreground)" }}
+                            >
                               Completed
                             </div>
                           </div>
-                          <div className="rounded-lg bg-red-50 p-3 text-center">
-                            <div className="font-bold text-2xl text-red-600">
+                          <div
+                            className="rounded-lg p-3 text-center"
+                            style={{ backgroundColor: "var(--destructive)" }}
+                          >
+                            <div
+                              className="font-bold text-2xl"
+                              style={{ color: "var(--destructive-foreground)" }}
+                            >
                               {uploadQueue.state.failedJobs}
                             </div>
-                            <div className="text-gray-600 text-sm">Failed</div>
+                            <div
+                              className="text-sm"
+                              style={{ color: "var(--destructive-foreground)" }}
+                            >
+                              Failed
+                            </div>
                           </div>
                         </div>
 
@@ -391,17 +454,32 @@ export default function Home() {
 
                     {/* Queue Monitoring */}
                     {uploadQueue.state.completedJobs > 0 && (
-                      <div className="rounded-lg border bg-white p-6 shadow-sm">
+                      <div
+                        className="rounded-lg border p-6 shadow-sm"
+                        style={{
+                          backgroundColor: "var(--card)",
+                          borderColor: "var(--border)",
+                        }}
+                      >
                         <div className="mb-4 flex items-center justify-between">
-                          <h2 className="font-semibold text-gray-900 text-xl">
+                          <h2
+                            className="font-semibold text-xl"
+                            style={{ color: "var(--foreground)" }}
+                          >
                             Background Processing Status
                           </h2>
                           <Button
-                            variant={queueMonitoringEnabled ? "secondary" : "default"}
-                            onClick={() => setQueueMonitoringEnabled(!queueMonitoringEnabled)}
+                            variant={
+                              queueMonitoringEnabled ? "secondary" : "default"
+                            }
+                            onClick={() =>
+                              setQueueMonitoringEnabled(!queueMonitoringEnabled)
+                            }
                             size="sm"
                           >
-                            {queueMonitoringEnabled ? "Stop Monitoring" : "Start Monitoring"}
+                            {queueMonitoringEnabled
+                              ? "Stop Monitoring"
+                              : "Start Monitoring"}
                           </Button>
                         </div>
                         <QueueMonitor
@@ -415,12 +493,25 @@ export default function Home() {
                   </>
                 ) : (
                   /* Representation Tab */
-                  <div className="rounded-lg border bg-white p-6 shadow-sm">
-                    <h2 className="mb-4 font-semibold text-gray-900 text-xl">
+                  <div
+                    className="rounded-lg border p-6 shadow-sm"
+                    style={{
+                      backgroundColor: "var(--card)",
+                      borderColor: "var(--border)",
+                    }}
+                  >
+                    <h2
+                      className="mb-4 font-semibold text-xl"
+                      style={{ color: "var(--foreground)" }}
+                    >
                       AI Representations
                     </h2>
-                    <p className="mb-6 text-gray-600">
-                      Query and view AI representations from Honcho. Enter a peer ID to see what the AI remembers.
+                    <p
+                      className="mb-6"
+                      style={{ color: "var(--muted-foreground)" }}
+                    >
+                      Query and view AI representations from Honcho. Enter a
+                      peer ID to see what the AI remembers.
                     </p>
                     <RepresentationViewer
                       apiKey={apiKey}
@@ -434,21 +525,25 @@ export default function Home() {
             )}
 
             {/* API Key Dialog */}
-            <Dialog open={isApiKeyDialogOpen} onOpenChange={(open) => {
-              if (!open) {
-                handleCloseApiKeyDialog()
-              } else {
-                setIsApiKeyDialogOpen(true)
-              }
-            }}>
+            <Dialog
+              open={isApiKeyDialogOpen}
+              onOpenChange={(open) => {
+                if (!open) {
+                  handleCloseApiKeyDialog()
+                } else {
+                  setIsApiKeyDialogOpen(true)
+                }
+              }}
+            >
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Honcho API Configuration</DialogTitle>
                   <DialogDescription>
-                    Enter your Honcho API key to connect and start uploading conversations.
+                    Enter your Honcho API key to connect and start uploading
+                    conversations.
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="modal-apiKey">Honcho API Key</Label>
@@ -466,7 +561,8 @@ export default function Home() {
                       }}
                     />
                     <p className="mt-1 text-gray-500 text-sm">
-                      Your API key is stored locally and never sent to our servers except for Honcho API calls.
+                      Your API key is stored locally and never sent to our
+                      servers except for Honcho API calls.
                     </p>
                   </div>
 
