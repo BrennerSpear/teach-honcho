@@ -45,7 +45,3 @@ yarn-error.log*
 # idea files
 .idea
 
-chats/raw/*
-chats/clean/*
-chats/processed/*
-chats/error/*
