@@ -68,14 +68,14 @@ export function QueueMonitor({
     return (
       <div
         className={cn(
-          "rounded-lg border border-gray-200 bg-gray-50 p-4",
+          "rounded-lg border border-border bg-muted p-4",
           className,
         )}
       >
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-background">
             <svg
-              className="h-5 w-5 text-gray-600"
+              className="h-5 w-5 text-muted-foreground"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -89,8 +89,8 @@ export function QueueMonitor({
             </svg>
           </div>
           <div className="flex-1">
-            <h3 className="font-medium text-gray-800">No Active Processing</h3>
-            <p className="text-gray-600 text-sm">No work units in the queue</p>
+            <h3 className="font-medium text-foreground">No Active Processing</h3>
+            <p className="text-muted-foreground text-sm">No work units in the queue</p>
           </div>
           <Button variant="ghost" size="sm" onClick={refresh}>
             <svg
@@ -116,14 +116,14 @@ export function QueueMonitor({
     return (
       <div
         className={cn(
-          "rounded-lg border border-green-200 bg-green-50 p-4",
+          "rounded-lg border border-accent bg-accent p-4",
           className,
         )}
       >
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
             <svg
-              className="h-5 w-5 text-green-600"
+              className="h-5 w-5 text-primary"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -137,10 +137,10 @@ export function QueueMonitor({
             </svg>
           </div>
           <div className="flex-1">
-            <h3 className="font-medium text-green-800">
+            <h3 className="font-medium text-accent-foreground">
               Queue Processing Complete
             </h3>
-            <div className="space-y-1 text-green-600 text-sm">
+            <div className="space-y-1 text-accent-foreground text-sm">
               <p>
                 All {status.totalWorkUnits} work units completed successfully
               </p>
@@ -172,32 +172,32 @@ export function QueueMonitor({
   return (
     <div
       className={cn(
-        "rounded-lg border border-blue-200 bg-blue-50 p-4",
+        "rounded-lg border border-primary bg-primary/10 p-4",
         className,
       )}
     >
       <div className="flex items-center gap-3">
-        <LoadingSpinner size="sm" className="text-blue-600" />
+        <LoadingSpinner size="sm" className="text-primary" />
         <div className="flex-1">
-          <h3 className="font-medium text-blue-800">
+          <h3 className="font-medium text-foreground">
             Processing in Background
           </h3>
           <div className="space-y-2">
             {/* Progress bar */}
             <div className="relative w-full">
-              <div className="flex h-2 overflow-hidden rounded bg-blue-200 text-xs">
+              <div className="flex h-2 overflow-hidden rounded bg-muted text-xs">
                 <div
                   style={{ width: `${status.percentComplete}%` }}
-                  className="flex flex-col justify-center whitespace-nowrap bg-blue-600 text-center text-white shadow-none transition-all duration-300"
+                  className="flex flex-col justify-center whitespace-nowrap bg-primary text-center text-primary-foreground shadow-none transition-all duration-300"
                 />
               </div>
-              <p className="mt-1 font-medium text-blue-800 text-xs">
+              <p className="mt-1 font-medium text-foreground text-xs">
                 {status.percentComplete}% complete
               </p>
             </div>
 
             {/* Work unit details */}
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-blue-600 text-sm">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-foreground text-sm">
               <div>
                 <span className="font-medium">Total:</span>{" "}
                 {status.totalWorkUnits}
@@ -216,7 +216,7 @@ export function QueueMonitor({
               </div>
             </div>
 
-            <p className="text-blue-500 text-xs">
+            <p className="text-muted-foreground text-xs">
               Last updated: {status.lastUpdated.toLocaleTimeString()}
             </p>
           </div>

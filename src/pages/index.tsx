@@ -29,6 +29,7 @@ export default function Home() {
   const [tempApiKey, setTempApiKey] = useState("")
   const [isApiKeyDialogOpen, setIsApiKeyDialogOpen] = useState(false)
   const [queueMonitoringEnabled, setQueueMonitoringEnabled] = useState(false)
+  const [userDisabledMonitoring, setUserDisabledMonitoring] = useState(false)
 
   // Connection testing
   const {
@@ -47,6 +48,13 @@ export default function Home() {
     }
   }, [isLoaded, testConnection])
 
+  // Auto-enable queue monitoring when connected (but not if user manually disabled it)
+  useEffect(() => {
+    if (isConnected && !queueMonitoringEnabled && !userDisabledMonitoring) {
+      setQueueMonitoringEnabled(true)
+    }
+  }, [isConnected, queueMonitoringEnabled, userDisabledMonitoring])
+
   // Upload queue management
   const uploadQueue = useUploadQueue({
     apiKey: apiKey || "",
@@ -58,8 +66,6 @@ export default function Home() {
     },
     onQueueComplete: () => {
       console.log("All uploads completed!")
-      // Enable queue monitoring after uploads complete
-      setQueueMonitoringEnabled(true)
     },
   })
 
@@ -80,6 +86,18 @@ export default function Home() {
   const handleCloseApiKeyDialog = () => {
     setIsApiKeyDialogOpen(false)
     setTempApiKey("")
+  }
+
+  const handleToggleQueueMonitoring = () => {
+    const newState = !queueMonitoringEnabled
+    setQueueMonitoringEnabled(newState)
+
+    // Track if user manually disabled monitoring
+    if (!newState) {
+      setUserDisabledMonitoring(true)
+    } else {
+      setUserDisabledMonitoring(false)
+    }
   }
 
   const handleFileProcessed = (result: {
@@ -148,11 +166,14 @@ export default function Home() {
           </div>
 
           <div className="mx-auto max-w-5xl space-y-6">
-            <div className="rounded-lg border border-border bg-card p-8 shadow-sm">
+            {/* Getting Started - Now at the top */}
+            <div
+              className={`rounded-lg border bg-card p-8 shadow-sm ${isConnected ? "border-2 border-primary" : "border-border"}`}
+            >
               {isConnected && (
                 <div className="mb-4 flex items-center gap-2 rounded-lg border border-border bg-muted p-3">
                   <div className="h-2 w-2 rounded-full bg-green-400" />
-                  <span className="font-medium text-foreground text-sm">
+                  <span className="font-medium text-green-800 text-sm">
                     Connected to Honcho
                   </span>
                 </div>
@@ -216,6 +237,7 @@ export default function Home() {
                 {/* Tab Navigation */}
                 <div className="flex rounded-lg bg-card p-1 shadow-sm">
                   <button
+                    type="button"
                     onClick={() => setActiveTab("upload")}
                     className={`flex-1 rounded-md px-4 py-2 font-medium text-sm transition-colors ${
                       activeTab === "upload"
@@ -226,11 +248,12 @@ export default function Home() {
                     Upload Conversations
                   </button>
                   <button
+                    type="button"
                     onClick={() => setActiveTab("representation")}
                     className={`flex-1 rounded-md px-4 py-2 font-medium text-sm transition-colors ${
                       activeTab === "representation"
                         ? "bg-primary text-primary-foreground"
-                        : "bg-transparent text-muted-foreground"
+                        : "bg-transparent text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     View Representations
@@ -333,13 +356,13 @@ export default function Home() {
                               key={job.id}
                               className={`flex items-center justify-between rounded-lg border p-3 ${
                                 job.status === "completed"
-                                  ? "border-green-200 bg-green-50"
+                                  ? "border-accent bg-accent"
                                   : job.status === "failed"
-                                    ? "border-red-200 bg-red-50"
+                                    ? "border-destructive bg-destructive"
                                     : job.status === "uploading" ||
                                         job.status === "retrying"
-                                      ? "border-blue-200 bg-blue-50"
-                                      : "border-gray-200 bg-gray-50"
+                                      ? "border-primary bg-primary/10"
+                                      : "border-border bg-muted"
                               }`}
                             >
                               <div className="flex-1">
@@ -350,31 +373,31 @@ export default function Home() {
                                   <span
                                     className={`rounded-full px-2 py-1 font-medium text-xs ${
                                       job.status === "completed"
-                                        ? "bg-green-100 text-green-800"
+                                        ? "bg-accent-foreground text-accent"
                                         : job.status === "failed"
-                                          ? "bg-red-100 text-red-800"
+                                          ? "bg-destructive-foreground text-destructive"
                                           : job.status === "uploading"
-                                            ? "bg-blue-100 text-blue-800"
+                                            ? "bg-primary text-primary-foreground"
                                             : job.status === "retrying"
-                                              ? "bg-yellow-100 text-yellow-800"
-                                              : "bg-gray-100 text-gray-800"
+                                              ? "bg-secondary text-secondary-foreground"
+                                              : "bg-muted text-muted-foreground"
                                     }`}
                                   >
                                     {job.status}
                                   </span>
                                   {job.retryCount > 0 && (
-                                    <span className="text-gray-500 text-xs">
+                                    <span className="text-muted-foreground text-xs">
                                       (Retry {job.retryCount}/{job.maxRetries})
                                     </span>
                                   )}
                                 </div>
                                 {job.error && (
-                                  <p className="mt-1 text-red-600 text-sm">
+                                  <p className="mt-1 text-destructive text-sm">
                                     {job.error}
                                   </p>
                                 )}
                                 {job.uploadedAt && (
-                                  <p className="mt-1 text-gray-500 text-xs">
+                                  <p className="mt-1 text-muted-foreground text-xs">
                                     Completed:{" "}
                                     {new Date(job.uploadedAt).toLocaleString()}
                                   </p>
@@ -407,35 +430,31 @@ export default function Home() {
                       </div>
                     )}
 
-                    {/* Queue Monitoring */}
-                    {uploadQueue.state.completedJobs > 0 && (
-                      <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-                        <div className="mb-4 flex items-center justify-between">
-                          <h2 className="font-semibold text-foreground text-xl">
-                            Background Processing Status
-                          </h2>
-                          <Button
-                            variant={
-                              queueMonitoringEnabled ? "secondary" : "default"
-                            }
-                            onClick={() =>
-                              setQueueMonitoringEnabled(!queueMonitoringEnabled)
-                            }
-                            size="sm"
-                          >
-                            {queueMonitoringEnabled
-                              ? "Stop Monitoring"
-                              : "Start Monitoring"}
-                          </Button>
-                        </div>
-                        <QueueMonitor
-                          apiKey={apiKey}
-                          workspaceId="teach-honcho-testing"
-                          environment="production"
-                          enabled={queueMonitoringEnabled}
-                        />
+                    {/* Queue Monitoring - Always show when connected */}
+                    <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+                      <div className="mb-4 flex items-center justify-between">
+                        <h2 className="font-semibold text-foreground text-xl">
+                          Background Processing Status
+                        </h2>
+                        <Button
+                          variant={
+                            queueMonitoringEnabled ? "secondary" : "default"
+                          }
+                          onClick={handleToggleQueueMonitoring}
+                          size="sm"
+                        >
+                          {queueMonitoringEnabled
+                            ? "Stop Monitoring"
+                            : "Start Monitoring"}
+                        </Button>
                       </div>
-                    )}
+                      <QueueMonitor
+                        apiKey={apiKey}
+                        workspaceId="teach-honcho"
+                        environment="production"
+                        enabled={queueMonitoringEnabled}
+                      />
+                    </div>
                   </>
                 ) : (
                   /* Representation Tab */
@@ -450,7 +469,7 @@ export default function Home() {
                     <RepresentationViewer
                       apiKey={apiKey}
                       peerId=""
-                      workspaceId="teach-honcho-testing"
+                      workspaceId="teach-honcho"
                       environment="production"
                     />
                   </div>
@@ -494,7 +513,7 @@ export default function Home() {
                         }
                       }}
                     />
-                    <p className="mt-1 text-gray-500 text-sm">
+                    <p className="mt-1 text-muted-foreground text-sm">
                       Your API key is stored locally and never sent to our
                       servers except for Honcho API calls.
                     </p>
@@ -502,17 +521,17 @@ export default function Home() {
 
                   {/* Connection Status in Modal */}
                   {apiKey && (
-                    <div className="flex items-center gap-2 rounded-lg border p-3">
+                    <div className="flex items-center gap-2 rounded-lg border border-border p-3">
                       <div
                         className={`h-2 w-2 rounded-full ${
                           connectionStatus.testing
-                            ? "bg-yellow-400"
+                            ? "bg-secondary"
                             : isConnected
-                              ? "bg-green-400"
-                              : "bg-red-400"
+                              ? "bg-primary"
+                              : "bg-destructive"
                         }`}
                       />
-                      <span className="text-gray-600 text-sm">
+                      <span className="text-muted-foreground text-sm">
                         {connectionStatus.testing
                           ? "Testing connection..."
                           : isConnected
