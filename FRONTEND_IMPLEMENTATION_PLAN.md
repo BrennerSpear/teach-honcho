@@ -256,6 +256,10 @@ const useUploadProgress = () => {
 - [ ] Accessibility improvements
 - [ ] Comprehensive testing
 
+### Phase 7: Cleanup & Performance Issues
+- [ ] Replace slow connection test API with faster health check endpoint
+- [ ] Keep chats separated by conversation objects - each conversation should maintain its own list of messages and be uploaded as separate sessions to Honcho
+
 ## File Size Handling Strategy
 
 ### Size Categories

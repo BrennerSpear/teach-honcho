@@ -42,7 +42,8 @@ export async function uploadMessagesToHoncho(
     // Initialize Honcho client
     const honcho = new Honcho({
       apiKey: options.apiKey || process.env.HONCHO_API_KEY,
-      workspaceId: options.workspaceId || "teach-honcho",
+      // workspaceId: options.workspaceId || "teach-honcho",
+      workspaceId: options.workspaceId || "teach-honcho-testing",
       environment: options.environment || "production",
     })
 
@@ -107,6 +108,13 @@ export interface RepresentationResult {
   success: boolean
   message?: string
   representation?: WorkingRepresentation
+}
+
+export interface ConnectionTestResult {
+  success: boolean
+  message?: string
+  connected: boolean
+  apiKeyValid: boolean
 }
 
 /**
