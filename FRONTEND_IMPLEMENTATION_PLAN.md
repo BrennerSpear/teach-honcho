@@ -243,11 +243,8 @@ const useUploadProgress = () => {
 - [ ] Resume functionality
 
 ### Phase 5: Advanced Features
-- [ ] Background queue monitoring
-- [ ] Representation display UI
-- [ ] Export/import functionality
-- [ ] Advanced error recovery
-- [ ] Performance optimizations
+- [x] Background queue monitoring
+- [x] Representation display UI
 
 ### Phase 6: Polish & Testing
 - [ ] Loading states and animations
