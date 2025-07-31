@@ -166,9 +166,9 @@ export function FileUploader({
         onDragLeave={handleDragLeave}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
-        // biome-ignore lint/a11y/useSemanticElements: drag-drop zone needs div element
         role="button"
         tabIndex={0}
+        aria-label="Drop ChatGPT export file here or click to browse"
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault()
