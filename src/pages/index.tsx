@@ -5,6 +5,7 @@ import { QueueMonitor } from "~/components/features/QueueMonitor"
 import { RepresentationViewer } from "~/components/features/RepresentationViewer"
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/Alert"
 import { Button } from "~/components/ui/Button"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "~/components/ui/Dialog"
 import { Input } from "~/components/ui/Input"
 import { Label } from "~/components/ui/Label"
 import type { ProcessedChat } from "~/core/chatProcessor"
@@ -19,7 +20,7 @@ export default function Home() {
   const { apiKey, saveApiKey, getObfuscatedKey, clearApiKey, isLoaded } =
     useApiKey()
   const [tempApiKey, setTempApiKey] = useState("")
-  const [isSettingApiKey, setIsSettingApiKey] = useState(false)
+  const [isApiKeyDialogOpen, setIsApiKeyDialogOpen] = useState(false)
   const [queueMonitoringEnabled, setQueueMonitoringEnabled] = useState(false)
 
   // Connection testing
@@ -32,16 +33,23 @@ export default function Home() {
     autoTest: false,
   })
 
-  // Update isSettingApiKey when apiKey loads from localStorage
+  // Test connection when API key loads from localStorage
   useEffect(() => {
-    if (isLoaded) {
-      setIsSettingApiKey(!apiKey)
-      // Test connection if API key exists
-      if (apiKey) {
-        setTimeout(() => testConnection(), 100)
-      }
+    if (isLoaded && apiKey) {
+      setTimeout(() => testConnection(), 100)
     }
   }, [isLoaded, apiKey, testConnection])
+
+  // Auto-close dialog when successfully connected
+  useEffect(() => {
+    if (isApiKeyDialogOpen && isConnected && apiKey) {
+      const timer = setTimeout(() => {
+        setIsApiKeyDialogOpen(false)
+        setTempApiKey("")
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [isApiKeyDialogOpen, isConnected, apiKey])
 
   // Upload queue management
   const uploadQueue = useUploadQueue({
@@ -62,11 +70,19 @@ export default function Home() {
   const handleSetApiKey = () => {
     if (tempApiKey.trim()) {
       saveApiKey(tempApiKey.trim())
-      setTempApiKey("")
-      setIsSettingApiKey(false)
       // Test connection after setting API key
       setTimeout(() => testConnection(), 100)
     }
+  }
+
+  const handleOpenApiKeyDialog = () => {
+    setTempApiKey(apiKey || "")
+    setIsApiKeyDialogOpen(true)
+  }
+
+  const handleCloseApiKeyDialog = () => {
+    setIsApiKeyDialogOpen(false)
+    setTempApiKey("")
   }
 
   const handleFileProcessed = (result: {
@@ -120,110 +136,59 @@ export default function Home() {
           </div>
 
           <div className="mx-auto max-w-5xl space-y-6">
-            {/* API Key Management */}
-            <div className="rounded-lg border bg-white p-6 shadow-sm">
-              <h2 className="mb-4 font-semibold text-gray-900 text-xl">
-                API Configuration
-              </h2>
-
-              {!apiKey || isSettingApiKey ? (
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="apiKey">Honcho API Key</Label>
-                    <div className="mt-1 flex gap-2">
-                      <Input
-                        id="apiKey"
-                        type="password"
-                        placeholder="Enter your Honcho API key"
-                        value={tempApiKey}
-                        onChange={(e) => setTempApiKey(e.target.value)}
-                        className="flex-1"
-                      />
-                      <Button
-                        onClick={handleSetApiKey}
-                        disabled={!tempApiKey.trim()}
-                      >
-                        Set Key
-                      </Button>
-                    </div>
-                    <p className="mt-1 text-gray-500 text-sm">
-                      Your API key is stored locally and never sent to our
-                      servers except for Honcho API calls.
-                    </p>
-                  </div>
-
-                  {connectionStatus.error && (
-                    <Alert variant="destructive">
-                      <AlertTitle>Connection Error</AlertTitle>
-                      <AlertDescription>
-                        {connectionStatus.error}
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="mr-4 min-w-0 flex-1">
-                      <p className="text-gray-600 text-sm">Current API Key:</p>
-                      <p className="overflow-hidden text-ellipsis whitespace-nowrap rounded bg-gray-100 px-2 py-1 font-mono text-sm">
-                        {getObfuscatedKey()}
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        onClick={() => setIsSettingApiKey(true)}
-                      >
-                        Change Key
-                      </Button>
-                      <Button variant="outline" onClick={clearApiKey}>
-                        Clear Key
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Connection Status */}
-                  <div className="flex items-center gap-2">
-                    <div
-                      className={`h-2 w-2 rounded-full ${
-                        connectionStatus.testing
-                          ? "bg-yellow-400"
-                          : isConnected
-                            ? "bg-green-400"
-                            : "bg-red-400"
-                      }`}
-                    />
-                    <span className="text-gray-600 text-sm">
-                      {connectionStatus.testing
-                        ? "Testing connection..."
-                        : isConnected
-                          ? "Connected to Honcho"
-                          : connectionStatus.testedAt
-                            ? "Connection failed"
-                            : "Not tested"}
-                    </span>
-                    {!connectionStatus.testing && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={testConnection}
-                      >
-                        {connectionStatus.testedAt ? "Retest" : "Test"}
-                      </Button>
-                    )}
-                  </div>
-
-                  {connectionStatus.error && (
-                    <Alert variant="destructive">
-                      <AlertTitle>Connection Error</AlertTitle>
-                      <AlertDescription>
-                        {connectionStatus.error}
-                      </AlertDescription>
-                    </Alert>
-                  )}
+            {/* Getting Started - Now at the top */}
+            <div className={`rounded-lg bg-white p-8 shadow-sm ${isConnected ? 'border-2 border-green-200' : 'border'}`}>
+              {isConnected && (
+                <div className="mb-4 flex items-center gap-2 rounded-lg bg-green-50 p-3">
+                  <div className="h-2 w-2 rounded-full bg-green-400" />
+                  <span className="font-medium text-green-800 text-sm">
+                    Connected to Honcho
+                  </span>
                 </div>
               )}
+              
+              <h2 className="mb-6 font-bold text-2xl text-gray-900">
+                Getting Started
+              </h2>
+              <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                <div>
+                  <h3 className="mb-3 font-semibold text-gray-900 text-lg">
+                    1. Get Your Honcho API Key
+                  </h3>
+                  <p className="mb-4 text-gray-600">
+                    You'll need a Honcho API key to upload conversations. Contact
+                    your Honcho administrator or check your Honcho dashboard for
+                    your API key.
+                  </p>
+                  <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 mb-4">
+                    <p className="text-sm text-yellow-800">
+                      <strong>Important:</strong> Keep your API key secure and
+                      never share it publicly.
+                    </p>
+                  </div>
+                  <Button 
+                    onClick={handleOpenApiKeyDialog}
+                    className="w-full sm:w-auto"
+                  >
+                    {apiKey ? "Change API Key" : "Add My API Key"}
+                  </Button>
+                </div>
+                <div>
+                  <h3 className="mb-3 font-semibold text-gray-900 text-lg">
+                    2. Export from ChatGPT
+                  </h3>
+                  <p className="mb-4 text-gray-600">
+                    In ChatGPT, go to Settings → Data Export → Export data.
+                    Download the conversations.json file from your export.
+                  </p>
+                  <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                    <p className="text-blue-800 text-sm">
+                      <strong>Note:</strong> Large files (over 50MB) will show a
+                      warning but can still be processed.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Main Content */}
@@ -463,52 +428,94 @@ export default function Home() {
               </>
             )}
 
-            {/* Getting Started - Always visible */}
-            <div className="rounded-lg bg-white p-8 shadow-sm">
-              <h2 className="mb-6 font-bold text-2xl text-gray-900">
-                Getting Started
-              </h2>
-              <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                <div>
-                  <h3 className="mb-3 font-semibold text-gray-900 text-lg">
-                    1. Get Your API Key
-                  </h3>
-                  <p className="mb-4 text-gray-600">
-                    You'll need a Honcho API key to upload conversations. Contact
-                    your Honcho administrator or check your Honcho dashboard for
-                    your API key.
-                  </p>
-                  <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
-                    <p className="text-sm text-yellow-800">
-                      <strong>Important:</strong> Keep your API key secure and
-                      never share it publicly.
+            {/* API Key Dialog */}
+            <Dialog open={isApiKeyDialogOpen} onOpenChange={setIsApiKeyDialogOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Honcho API Configuration</DialogTitle>
+                  <DialogDescription>
+                    Enter your Honcho API key to connect and start uploading conversations.
+                  </DialogDescription>
+                </DialogHeader>
+                
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="modal-apiKey">Honcho API Key</Label>
+                    <Input
+                      id="modal-apiKey"
+                      type="password"
+                      placeholder="Enter your Honcho API key"
+                      value={tempApiKey}
+                      onChange={(e) => setTempApiKey(e.target.value)}
+                      className="mt-1"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && tempApiKey.trim()) {
+                          handleSetApiKey()
+                        }
+                      }}
+                    />
+                    <p className="mt-1 text-gray-500 text-sm">
+                      Your API key is stored locally and never sent to our servers except for Honcho API calls.
                     </p>
                   </div>
-                </div>
-                <div>
-                  <h3 className="mb-3 font-semibold text-gray-900 text-lg">
-                    2. Export from ChatGPT
-                  </h3>
-                  <p className="mb-4 text-gray-600">
-                    In ChatGPT, go to Settings → Data Export → Export data.
-                    Download the conversations.json file from your export.
-                  </p>
-                  <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-                    <p className="text-blue-800 text-sm">
-                      <strong>Note:</strong> Large files (over 50MB) will show a
-                      warning but can still be processed.
-                    </p>
+
+                  {/* Connection Status in Modal */}
+                  {apiKey && (
+                    <div className="flex items-center gap-2 rounded-lg border p-3">
+                      <div
+                        className={`h-2 w-2 rounded-full ${
+                          connectionStatus.testing
+                            ? "bg-yellow-400"
+                            : isConnected
+                              ? "bg-green-400"
+                              : "bg-red-400"
+                        }`}
+                      />
+                      <span className="text-gray-600 text-sm">
+                        {connectionStatus.testing
+                          ? "Testing connection..."
+                          : isConnected
+                            ? "Connected to Honcho"
+                            : connectionStatus.testedAt
+                              ? "Connection failed"
+                              : "Not tested"}
+                      </span>
+                      {!connectionStatus.testing && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={testConnection}
+                          className="ml-auto"
+                        >
+                          {connectionStatus.testedAt ? "Retest" : "Test"}
+                        </Button>
+                      )}
+                    </div>
+                  )}
+
+                  {connectionStatus.error && (
+                    <Alert variant="destructive">
+                      <AlertTitle>Connection Error</AlertTitle>
+                      <AlertDescription>
+                        {connectionStatus.error}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  <div className="flex justify-end gap-2 pt-4">
+                    <Button variant="outline" onClick={handleCloseApiKeyDialog}>
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleSetApiKey}
+                      disabled={!tempApiKey.trim()}
+                    >
+                      Set API Key
+                    </Button>
                   </div>
                 </div>
-              </div>
-              {!apiKey && (
-                <div className="mt-6 rounded-lg bg-indigo-50 border border-indigo-200 p-4 text-center">
-                  <p className="text-indigo-800">
-                    ↑ Enter your API key above to start uploading conversations
-                  </p>
-                </div>
-              )}
-            </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </main>
