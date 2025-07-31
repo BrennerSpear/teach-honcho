@@ -151,7 +151,6 @@ export function FileUploader({
   return (
     <div className={cn("w-full space-y-4", className)}>
       {/* Drop Zone */}
-      {/* biome-ignore lint/a11y/useSemanticElements: drag-drop zone needs div element */}
       <div
         className={cn(
           "relative rounded-lg border-2 border-dashed p-8 text-center transition-colors",
@@ -167,6 +166,7 @@ export function FileUploader({
         onDragLeave={handleDragLeave}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
+        // biome-ignore lint/a11y/useSemanticElements: drag-drop zone needs div element
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
