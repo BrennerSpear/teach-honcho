@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { Honcho } from "@honcho-ai/sdk"
+import { api } from "~/utils/api"
 
 export interface QueueStatus {
   isProcessing: boolean
@@ -36,47 +36,30 @@ export function useQueueMonitoring(options: QueueMonitoringOptions) {
   })
   const [error, setError] = useState<string | null>(null)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
-  const honchoRef = useRef<Honcho | null>(null)
-
-  // Initialize Honcho client
-  useEffect(() => {
-    if (options.apiKey) {
-      honchoRef.current = new Honcho({
-        apiKey: options.apiKey,
-        workspaceId: options.workspaceId || "teach-honcho-testing",
-        environment: options.environment || "production",
-      })
-    }
-  }, [options.apiKey, options.workspaceId, options.environment])
+  const utils = api.useUtils()
 
   const checkQueueStatus = useCallback(async () => {
-    if (!honchoRef.current) return
+    if (!options.apiKey) return
 
     try {
-      // Get deriver status from Honcho API
-      const deriverStatus = await honchoRef.current.getDeriverStatus({
+      // Get queue status via tRPC
+      const result = await utils.chat.getQueueStatus.fetch({
+        apiKey: options.apiKey,
+        workspaceId: options.workspaceId,
+        environment: options.environment,
         observerId: options.observerId,
         senderId: options.senderId,
         sessionId: options.sessionId,
       })
 
-      // Calculate processing status and percentage
-      const isProcessing = 
-        (deriverStatus.inProgressWorkUnits > 0) || 
-        (deriverStatus.pendingWorkUnits > 0)
-      
-      const percentComplete = deriverStatus.totalWorkUnits > 0
-        ? Math.round((deriverStatus.completedWorkUnits / deriverStatus.totalWorkUnits) * 100)
-        : 0
-
       const queueStatus: QueueStatus = {
-        isProcessing,
-        totalWorkUnits: deriverStatus.totalWorkUnits,
-        completedWorkUnits: deriverStatus.completedWorkUnits,
-        inProgressWorkUnits: deriverStatus.inProgressWorkUnits,
-        pendingWorkUnits: deriverStatus.pendingWorkUnits,
-        percentComplete,
-        lastUpdated: new Date(),
+        isProcessing: result.isProcessing,
+        totalWorkUnits: result.totalWorkUnits,
+        completedWorkUnits: result.completedWorkUnits,
+        inProgressWorkUnits: result.inProgressWorkUnits,
+        pendingWorkUnits: result.pendingWorkUnits,
+        percentComplete: result.percentComplete,
+        lastUpdated: new Date(result.lastUpdated),
       }
 
       setStatus(queueStatus)
@@ -84,7 +67,7 @@ export function useQueueMonitoring(options: QueueMonitoringOptions) {
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to check queue status")
     }
-  }, [options.observerId, options.senderId, options.sessionId])
+  }, [options.apiKey, options.workspaceId, options.environment, options.observerId, options.senderId, options.sessionId, utils])
 
   const startMonitoring = useCallback(() => {
     if (intervalRef.current) return // Already monitoring

@@ -39,6 +39,15 @@ const representationSchema = z.object({
   environment: z.enum(["local", "production", "demo"]).optional(),
 })
 
+const queueStatusSchema = z.object({
+  apiKey: z.string(),
+  workspaceId: z.string().optional(),
+  environment: z.enum(["local", "production", "demo"]).optional(),
+  observerId: z.string().optional(),
+  senderId: z.string().optional(),
+  sessionId: z.string().optional(),
+})
+
 export const chatRouter = createTRPCRouter({
   // Single chat upload
   uploadChat: publicProcedure
@@ -191,6 +200,48 @@ export const chatRouter = createTRPCRouter({
           error: errorMessage,
           testedAt: new Date().toISOString(),
         }
+      }
+    }),
+
+  // Get queue/deriver status
+  getQueueStatus: publicProcedure
+    .input(queueStatusSchema)
+    .query(async ({ input }) => {
+      try {
+        const client = new Honcho({
+          apiKey: input.apiKey,
+          workspaceId: input.workspaceId || "teach-honcho-testing",
+          environment: input.environment || "production",
+        })
+
+        const deriverStatus = await client.getDeriverStatus({
+          observerId: input.observerId,
+          senderId: input.senderId,
+          sessionId: input.sessionId,
+        })
+
+        // Calculate processing status and percentage
+        const isProcessing = 
+          (deriverStatus.inProgressWorkUnits > 0) || 
+          (deriverStatus.pendingWorkUnits > 0)
+        
+        const percentComplete = deriverStatus.totalWorkUnits > 0
+          ? Math.round((deriverStatus.completedWorkUnits / deriverStatus.totalWorkUnits) * 100)
+          : 0
+
+        return {
+          isProcessing,
+          totalWorkUnits: deriverStatus.totalWorkUnits,
+          completedWorkUnits: deriverStatus.completedWorkUnits,
+          inProgressWorkUnits: deriverStatus.inProgressWorkUnits,
+          pendingWorkUnits: deriverStatus.pendingWorkUnits,
+          percentComplete,
+          lastUpdated: new Date().toISOString(),
+        }
+      } catch (error) {
+        throw new Error(
+          `Failed to get queue status: ${error instanceof Error ? error.message : "Unknown error"}`,
+        )
       }
     }),
 })
