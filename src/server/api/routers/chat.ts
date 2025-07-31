@@ -1,3 +1,4 @@
+import { Honcho } from "@honcho-ai/sdk"
 import { z } from "zod"
 import { getWorkingRepresentation, uploadMessagesToHoncho } from "~/core"
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc"
@@ -159,38 +160,33 @@ export const chatRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       try {
-        // Test connection by trying to query a test peer
-        const testPeerId = `test-${Date.now()}`
-        const result = await getWorkingRepresentation({
-          peerId: testPeerId,
+        // Test connection by trying to get workspace metadata
+        const client = new Honcho({
           apiKey: input.apiKey,
-          workspaceId: input.workspaceId,
-          environment: input.environment,
+          workspaceId: input.workspaceId || "teach-honcho-testing",
+          environment: input.environment || "production",
         })
 
-        console.log("result", result)
+        // This is a lightweight call that quickly verifies the API key
+        await client.getMetadata()
 
-        // If the call succeeded, the API key is valid
-        if (result.success) {
-          return {
-            connected: true,
-            apiKeyValid: true,
-            testedAt: new Date().toISOString(),
-          }
-        }
-
+        // If we get here, the API key is valid and connection works
         return {
-          connected: result.success,
-          apiKeyValid: result.success,
-          error: result.message,
+          connected: true,
+          apiKeyValid: true,
           testedAt: new Date().toISOString(),
         }
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "Unknown error"
 
+        // Check if it's an authentication error
+        const isAuthError = errorMessage.toLowerCase().includes("unauthorized") ||
+          errorMessage.toLowerCase().includes("api key") ||
+          errorMessage.toLowerCase().includes("authentication")
+
         return {
-          connected: false, // If it's an auth error, we did connect but key is invalid
+          connected: !isAuthError, // If it's an auth error, we did connect but key is invalid
           apiKeyValid: false,
           error: errorMessage,
           testedAt: new Date().toISOString(),
