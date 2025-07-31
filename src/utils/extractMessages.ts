@@ -75,13 +75,13 @@ export function extractVisibleMessages(
       text = text.replace(/\\\\n/g, "\n")
 
       // Remove content wrapped between E200/E202 pairs (like "tlwm", "cite", etc)
-      text = text.replace(/[\uE200-\uE202][^\\n\\r]*?[\uE200-\uE202]/g, '')
-      
+      text = text.replace(/[\uE200-\uE202][^\\n\\r]*?[\uE200-\uE202]/g, "")
+
       // Remove all remaining private use characters (E200-E206)
-      text = text.replace(/[\uE200-\uE206]/g, '')
-      
+      text = text.replace(/[\uE200-\uE206]/g, "")
+
       // Remove citation markers like 'citeturn0search1' that might have escaped
-      text = text.replace(/(?:cite)?turn\d+search\d+/gi, '')
+      text = text.replace(/(?:cite)?turn\d+search\d+/gi, "")
 
       // Clean up any resulting multiple spaces or weird spacing
       text = text.replace(/ {2,}/g, " ").trim()

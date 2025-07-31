@@ -16,7 +16,8 @@
     "enabled": true,
     "rules": {
       "style": {
-        "noUnusedTemplateLiteral": "off"
+        "noUnusedTemplateLiteral": "off",
+        "useNumberNamespace": "off"
       },
       "correctness": {
         "useExhaustiveDependencies": "off"
