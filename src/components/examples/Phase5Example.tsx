@@ -63,7 +63,7 @@ export function Phase5Example() {
 
         <QueueMonitor
           apiKey={apiKey}
-          workspaceId="teach-honcho-testing"
+          workspaceId="teach-honcho"
           environment="production"
           enabled={queueMonitoringEnabled}
           // Optional: Add specific filters if needed
@@ -121,7 +121,7 @@ export function Phase5Example() {
         {selectedPeerId && (
           <RepresentationViewer
             apiKey={apiKey}
-            workspaceId="teach-honcho-testing"
+            workspaceId="teach-honcho"
             environment="production"
           />
         )}

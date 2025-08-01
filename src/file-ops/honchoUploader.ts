@@ -241,7 +241,7 @@ export async function uploadChatToHoncho(
     console.log("[HonchoUploader] Uploading to Honcho:", {
       sessionId,
       messageCount: messages.length,
-      workspaceId: options.workspaceId || "teach-honcho-testing",
+      workspaceId: options.workspaceId || "teach-honcho",
       environment: options.environment || "production",
     })
     const uploadResult = await uploadMessagesToHoncho({

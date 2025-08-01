@@ -42,8 +42,7 @@ export async function uploadMessagesToHoncho(
     // Initialize Honcho client
     const honcho = new Honcho({
       apiKey: options.apiKey || process.env.HONCHO_API_KEY,
-      // workspaceId: options.workspaceId || "teach-honcho",
-      workspaceId: options.workspaceId || "teach-honcho-testing",
+      workspaceId: options.workspaceId || "teach-honcho",
       environment: options.environment || "production",
     })
 
@@ -56,7 +55,7 @@ export async function uploadMessagesToHoncho(
       providedSessionId: options.sessionId,
       finalSessionId: sessionId,
       isGenerated: !options.sessionId,
-      workspaceId: options.workspaceId || "teach-honcho-testing",
+      workspaceId: options.workspaceId || "teach-honcho",
       environment: options.environment || "production",
     })
 

@@ -103,7 +103,6 @@ export function FileUploader({
     [reset, onFileProcessed, processFileDirectly],
   )
 
-
   const handleReset = useCallback(() => {
     setSelectedFile(null)
     reset()
@@ -240,7 +239,6 @@ export function FileUploader({
           </Button>
         </div>
       )}
-
     </div>
   )
 }

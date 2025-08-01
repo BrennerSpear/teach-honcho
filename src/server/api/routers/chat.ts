@@ -193,7 +193,7 @@ export const chatRouter = createTRPCRouter({
         // Test connection by trying to get workspace metadata
         const client = new Honcho({
           apiKey: input.apiKey,
-          workspaceId: input.workspaceId || "teach-honcho-testing",
+          workspaceId: input.workspaceId || "teach-honcho",
           environment: input.environment || "production",
         })
 
@@ -233,7 +233,7 @@ export const chatRouter = createTRPCRouter({
         const client = new Honcho({
           apiKey: input.apiKey,
           workspaceId: input.workspaceId || "teach-honcho",
-          // workspaceId: input.workspaceId || "teach-honcho-testing",
+          // workspaceId: input.workspaceId || "teach-honcho",
           environment: input.environment || "production",
         })
 
