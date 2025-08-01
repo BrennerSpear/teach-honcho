@@ -6,20 +6,14 @@ import { Button } from "~/components/ui/Button"
 import { LoadingSpinner } from "~/components/ui/LoadingSpinner"
 import type { ProcessedChat } from "~/core/chatProcessor"
 import { useFileProcessor } from "~/hooks/useFileProcessor"
-import {
-  type FileValidationResult,
-  formatFileSize,
-  validateFile,
-} from "~/lib/fileUtils"
+import { formatFileSize, validateFile } from "~/lib/fileUtils"
 import { cn } from "~/lib/utils"
-import { FileValidationWarning } from "./FileValidationWarning"
 
 interface FileUploaderProps {
   onFileProcessed?: (data: {
     success: boolean
     data?: ProcessedChat | ProcessedChat[]
     error?: string
-    warning?: string
   }) => void
   className?: string
 }
@@ -30,10 +24,6 @@ export function FileUploader({
 }: FileUploaderProps) {
   const [isDragActive, setIsDragActive] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [pendingFile, setPendingFile] = useState<File | null>(null)
-  const [validationResult, setValidationResult] =
-    useState<FileValidationResult | null>(null)
-  const [showWarningDialog, setShowWarningDialog] = useState(false)
   const { isProcessing, error, processFile, reset } = useFileProcessor()
 
   const handleDragEnter = useCallback((e: React.DragEvent) => {
@@ -89,12 +79,7 @@ export function FileUploader({
     async (file: File) => {
       setSelectedFile(file)
       const result = await processFile(file)
-      // Ensure warning is undefined instead of null for type compatibility
-      const processedResult = {
-        ...result,
-        warning: result.warning || undefined,
-      }
-      onFileProcessed?.(processedResult)
+      onFileProcessed?.(result)
     },
     [processFile, onFileProcessed],
   )
@@ -105,7 +90,6 @@ export function FileUploader({
 
       // Validate file first
       const validation = validateFile(file)
-      setValidationResult(validation)
 
       if (!validation.valid) {
         const result = { success: false, error: validation.error }
@@ -113,38 +97,15 @@ export function FileUploader({
         return
       }
 
-      // Show warning dialog for large files
-      if (validation.sizeCategory !== "safe") {
-        setPendingFile(file)
-        setShowWarningDialog(true)
-        return
-      }
-
-      // Process file immediately for safe sizes
+      // Process file immediately
       await processFileDirectly(file)
     },
     [reset, onFileProcessed, processFileDirectly],
   )
 
-  const handleWarningProceed = useCallback(async () => {
-    setShowWarningDialog(false)
-    if (pendingFile) {
-      await processFileDirectly(pendingFile)
-      setPendingFile(null)
-    }
-  }, [pendingFile, processFileDirectly])
-
-  const handleWarningCancel = useCallback(() => {
-    setShowWarningDialog(false)
-    setPendingFile(null)
-    setValidationResult(null)
-  }, [])
 
   const handleReset = useCallback(() => {
     setSelectedFile(null)
-    setPendingFile(null)
-    setValidationResult(null)
-    setShowWarningDialog(false)
     reset()
   }, [reset])
 
@@ -215,8 +176,7 @@ export function FileUploader({
                 </p>
               </div>
               <div className="text-muted-foreground text-xs">
-                <p>Supports files up to 100MB</p>
-                <p>Warning shown for files over 50MB</p>
+                <p>Supports JSON files of any size</p>
               </div>
             </>
           )}
@@ -281,13 +241,6 @@ export function FileUploader({
         </div>
       )}
 
-      {/* File Validation Warning Dialog */}
-      <FileValidationWarning
-        validation={validationResult}
-        onProceed={handleWarningProceed}
-        onCancel={handleWarningCancel}
-        open={showWarningDialog}
-      />
     </div>
   )
 }
