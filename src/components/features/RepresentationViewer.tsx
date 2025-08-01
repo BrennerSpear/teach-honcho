@@ -134,34 +134,7 @@ function RepresentationContent({
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-foreground text-lg">
-          Working Representation
-        </h3>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={copyFullRepresentation}
-          className="flex items-center gap-2"
-        >
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-            />
-          </svg>
-          {copiedKey === "full" ? "Copied!" : "Copy All"}
-        </Button>
-      </div>
-
+    <div className="space-y-6 text-left">
       <div className="divide-y rounded-lg border border-border bg-card">
         {Object.entries(representation).map(([key, value]) => (
           <div key={key} className="p-4">
