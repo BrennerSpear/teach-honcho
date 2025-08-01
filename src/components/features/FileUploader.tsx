@@ -155,11 +155,11 @@ export function FileUploader({
         className={cn(
           "relative rounded-lg border-2 border-dashed p-8 text-center transition-colors",
           {
-            "border-primary bg-primary/5": isDragActive,
+            "border-primary bg-primary/10": isDragActive,
             "border-muted-foreground/25 hover:border-muted-foreground/50":
               !isDragActive && !selectedFile,
-            "border-green-500 bg-green-50": selectedFile && !error,
-            "border-red-500 bg-red-50": error,
+            "border-primary bg-primary/5": selectedFile && !error,
+            "border-destructive bg-destructive/5": error,
           },
         )}
         onDragEnter={handleDragEnter}

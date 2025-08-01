@@ -89,8 +89,12 @@ export function QueueMonitor({
             </svg>
           </div>
           <div className="flex-1">
-            <h3 className="font-medium text-foreground">No Active Processing</h3>
-            <p className="text-muted-foreground text-sm">No work units in the queue</p>
+            <h3 className="font-medium text-foreground">
+              No Active Processing
+            </h3>
+            <p className="text-muted-foreground text-sm">
+              No work units in the queue
+            </p>
           </div>
           <Button variant="ghost" size="sm" onClick={refresh}>
             <svg

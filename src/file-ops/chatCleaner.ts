@@ -35,28 +35,43 @@ export async function cleanChatFile(
       }
     }
 
-    if (!processResult.data?.messages) {
+    // The chat cleaner only handles single conversations, not arrays
+    if (Array.isArray(processResult.data)) {
+      return {
+        success: false,
+        message:
+          "Chat cleaner cannot handle multiple conversations. Please use the batch processor.",
+      }
+    }
+
+    const processedData = processResult.data
+    if (!processedData?.messages) {
       return {
         success: false,
         message: "No messages found after processing",
       }
     }
 
-    const messages = processResult.data.messages
-
     // Ensure output directory exists
     await mkdir(resolve(options.outputPath, ".."), { recursive: true })
 
+    // Create output object with messages, title, and create_time
+    const outputData = {
+      messages: processedData.messages,
+      title: processedData.title,
+      create_time: processedData.create_time,
+    }
+
     await writeFile(
       options.outputPath,
-      JSON.stringify(messages, null, 2),
+      JSON.stringify(outputData, null, 2),
       "utf8",
     )
 
     return {
       success: true,
       message: `Successfully cleaned chat file`,
-      messagesCount: messages.length,
+      messagesCount: processedData.messages.length,
       outputPath: options.outputPath,
     }
   } catch (error) {

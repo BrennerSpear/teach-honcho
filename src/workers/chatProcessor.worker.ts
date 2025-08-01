@@ -47,6 +47,14 @@ async function handleProcessChatData({
 
     // Process the chat data
     const result = processChatData(jsonData)
+
+    console.log("[Worker] Chat data processed:", {
+      success: result.success,
+      hasData: !!result.data,
+      dataType: Array.isArray(result.data) ? "array" : "single",
+      data: result.data,
+    })
+
     if (!result.success) {
       throw new Error(result.message)
     }

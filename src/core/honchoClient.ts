@@ -51,7 +51,31 @@ export async function uploadMessagesToHoncho(
     const sessionId =
       options.sessionId ||
       `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-    const session = honcho.session(sessionId)
+
+    console.log("[HonchoClient] Session setup:", {
+      providedSessionId: options.sessionId,
+      finalSessionId: sessionId,
+      isGenerated: !options.sessionId,
+      workspaceId: options.workspaceId || "teach-honcho-testing",
+      environment: options.environment || "production",
+    })
+
+    // Create or retrieve the session - this is required before adding messages
+    const session = honcho.session(sessionId, {
+      config: {
+        observe_others: false,
+        observe_me: true,
+      },
+    })
+
+    // Ensure session exists by calling getMetadata (this will trigger getOrCreate)
+    try {
+      await session.getMetadata()
+      console.log("[HonchoClient] Session created/retrieved successfully")
+    } catch (error) {
+      console.error("[HonchoClient] Failed to create/retrieve session:", error)
+      throw error
+    }
 
     // Create peers for unique authors
     const uniqueAuthors = [...new Set(options.messages.map((m) => m.author))]
@@ -74,7 +98,21 @@ export async function uploadMessagesToHoncho(
     })
 
     // Add all messages to the session
+    console.log("[HonchoClient] Adding messages to session:", {
+      sessionId,
+      messageCount: honchoMessages.length,
+      uniqueAuthors,
+      firstMessage: options.messages[0],
+      lastMessage: options.messages[options.messages.length - 1],
+    })
+
     await session.addMessages(honchoMessages)
+
+    console.log("[HonchoClient] Upload successful:", {
+      sessionId,
+      messagesUploaded: options.messages.length,
+      peers: uniqueAuthors,
+    })
 
     return {
       success: true,

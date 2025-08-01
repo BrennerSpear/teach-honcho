@@ -81,7 +81,9 @@ function RepresentationContent({
               {copiedKey === key ? "Copied!" : "Copy"}
             </Button>
           </div>
-          <p className="whitespace-pre-wrap text-muted-foreground text-sm">{value}</p>
+          <p className="whitespace-pre-wrap text-muted-foreground text-sm">
+            {value}
+          </p>
         </div>
       )
     }
@@ -229,7 +231,8 @@ export function RepresentationViewer({
             Get Working Representation
           </h3>
           <p className="mx-auto mb-6 max-w-md text-muted-foreground text-sm">
-            Get a working representation of you based on your uploaded conversations.
+            Get a working representation of you based on your uploaded
+            conversations.
           </p>
           <Button onClick={handleGetRepresentation} disabled={!apiKey}>
             Get Representation

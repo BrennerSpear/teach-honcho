@@ -1,4 +1,6 @@
 export interface ChatJSON {
+  title?: string
+  create_time?: number
   mapping: Record<
     string,
     {
@@ -26,16 +28,18 @@ export interface ChatJSON {
  * export formats (e.g. camelCase vs snake_case metadata keys, `parts` array vs
  * single `text` field inside `content`).
  */
-export function extractVisibleMessages(
-  json: ChatJSON | undefined | null,
-): Array<{ author: string; content: string }> {
+export function extractVisibleMessages(json: ChatJSON | undefined | null): {
+  messages: Array<{ author: string; content: string }>
+  title?: string
+  create_time?: number
+} {
   if (
     !json ||
     typeof json !== "object" ||
     !json.mapping ||
     typeof json.mapping !== "object"
   ) {
-    return []
+    return { messages: [] }
   }
 
   const messages: Array<{ time: number; author: string; content: string }> = []
@@ -91,7 +95,11 @@ export function extractVisibleMessages(
   }
 
   // Sort chronologically to preserve conversation flow (best-effort)
-  return messages
-    .sort((a, b) => a.time - b.time)
-    .map(({ author, content }) => ({ author, content }))
+  return {
+    messages: messages
+      .sort((a, b) => a.time - b.time)
+      .map(({ author, content }) => ({ author, content })),
+    title: json.title,
+    create_time: json.create_time,
+  }
 }

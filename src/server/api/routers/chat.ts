@@ -53,6 +53,14 @@ export const chatRouter = createTRPCRouter({
   uploadChat: publicProcedure
     .input(uploadChatSchema)
     .mutation(async ({ input }) => {
+      console.log("[API Router] Upload chat request received:", {
+        sessionId: input.sessionId,
+        messageCount: input.messages?.length,
+        workspaceId: input.workspaceId,
+        environment: input.environment,
+        hasSessionId: !!input.sessionId,
+      })
+
       try {
         const result = await uploadMessagesToHoncho({
           messages: input.messages,
@@ -63,8 +71,15 @@ export const chatRouter = createTRPCRouter({
         })
 
         if (!result.success) {
+          console.error("[API Router] Upload failed:", result.message)
           throw new Error(result.message)
         }
+
+        console.log("[API Router] Upload successful:", {
+          sessionId: result.sessionId,
+          messagesCount: result.messagesCount,
+          uniqueAuthors: result.uniqueAuthors,
+        })
 
         return {
           ...result,
@@ -86,6 +101,12 @@ export const chatRouter = createTRPCRouter({
 
       for (const batch of input.chatBatches) {
         try {
+          console.log("[API Router] Batch upload item:", {
+            batchId: batch.id,
+            sessionId: batch.sessionId,
+            messageCount: batch.messages?.length,
+          })
+
           const result = await uploadMessagesToHoncho({
             messages: batch.messages,
             sessionId: batch.sessionId,

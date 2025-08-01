@@ -101,24 +101,134 @@ export async function uploadChatToHoncho(
     const jsonContent = readFileSync(filePath, "utf-8")
     const parsedData = JSON.parse(jsonContent)
 
-    // Use pure processor
-    const processResult = processChatData(parsedData)
+    // Check if this is a cleaned file with new format (has messages, title, create_time)
+    if (
+      parsedData &&
+      typeof parsedData === "object" &&
+      "messages" in parsedData
+    ) {
+      // New cleaned format: { messages: [...], title: "...", create_time: ... }
+      messages = parsedData.messages
+      if (!Array.isArray(messages)) {
+        return {
+          success: false,
+          message: "Invalid cleaned file format: messages is not an array",
+        }
+      }
 
-    if (!processResult.success) {
-      return {
-        success: false,
-        message: processResult.message,
+      // Generate session ID from title and create_time if not provided
+      if (!sessionId) {
+        const { title, create_time } = parsedData
+        console.log("[HonchoUploader] Parsed data:", {
+          title,
+          create_time,
+          hasMessages: !!parsedData.messages,
+          messageCount: parsedData.messages?.length,
+        })
+        if (title && create_time) {
+          // Format: title-create_time
+          const cleanTitle = title
+            .replace(/[^a-zA-Z0-9-_\s]/g, "")
+            .replace(/\s+/g, "-")
+          // Remove decimal from timestamp to match Honcho's pattern
+          const timestamp = Math.floor(create_time)
+          sessionId = `${cleanTitle}-${timestamp}`
+          console.log(
+            "[HonchoUploader] Generated session ID from title and timestamp:",
+            {
+              originalTitle: title,
+              cleanTitle,
+              create_time,
+              sessionId,
+            },
+          )
+        } else {
+          // Fallback to filename-based ID
+          sessionId = basename(options.filePath)
+            .replace(/\.json$/, "")
+            .replace(/[^a-zA-Z0-9-_]/g, "-")
+          console.log(
+            "[HonchoUploader] Fallback to filename-based session ID:",
+            {
+              filename: basename(options.filePath),
+              sessionId,
+              reason: !title ? "Missing title" : "Missing create_time",
+            },
+          )
+        }
+      }
+    } else {
+      // Old format or raw ChatGPT export - use processor
+      const processResult = processChatData(parsedData)
+
+      if (!processResult.success) {
+        return {
+          success: false,
+          message: processResult.message,
+        }
+      }
+
+      // The uploader only handles single conversations, not arrays
+      if (Array.isArray(processResult.data)) {
+        return {
+          success: false,
+          message:
+            "Uploader cannot handle multiple conversations. Please use the batch processor.",
+        }
+      }
+
+      const processedData = processResult.data
+      if (!processedData?.messages) {
+        return {
+          success: false,
+          message: "No messages found after processing",
+        }
+      }
+
+      messages = processedData.messages
+
+      // Generate session ID from title and create_time if not provided
+      if (!sessionId) {
+        const { title, create_time } = processedData
+        console.log("[HonchoUploader] Processed data (old format):", {
+          title,
+          create_time,
+          hasMessages: !!processedData.messages,
+          messageCount: processedData.messages?.length,
+        })
+        if (title && create_time) {
+          // Format: title-create_time
+          const cleanTitle = title
+            .replace(/[^a-zA-Z0-9-_\s]/g, "")
+            .replace(/\s+/g, "-")
+          // Remove decimal from timestamp to match Honcho's pattern
+          const timestamp = Math.floor(create_time)
+          sessionId = `${cleanTitle}-${timestamp}`
+          console.log(
+            "[HonchoUploader] Generated session ID from title and timestamp:",
+            {
+              originalTitle: title,
+              cleanTitle,
+              create_time,
+              sessionId,
+            },
+          )
+        } else {
+          // Fallback to filename-based ID
+          sessionId = basename(options.filePath)
+            .replace(/\.json$/, "")
+            .replace(/[^a-zA-Z0-9-_]/g, "-")
+          console.log(
+            "[HonchoUploader] Fallback to filename-based session ID:",
+            {
+              filename: basename(options.filePath),
+              sessionId,
+              reason: !title ? "Missing title" : "Missing create_time",
+            },
+          )
+        }
       }
     }
-
-    if (!processResult.data?.messages) {
-      return {
-        success: false,
-        message: "No messages found after processing",
-      }
-    }
-
-    messages = processResult.data.messages
   } catch (error) {
     return {
       success: false,
@@ -126,15 +236,14 @@ export async function uploadChatToHoncho(
     }
   }
 
-  // Generate session ID from filename if not provided
-  if (!sessionId) {
-    sessionId = basename(options.filePath)
-      .replace(/\.json$/, "")
-      .replace(/[^a-zA-Z0-9-_]/g, "-")
-  }
-
   try {
     // Use pure upload function
+    console.log("[HonchoUploader] Uploading to Honcho:", {
+      sessionId,
+      messageCount: messages.length,
+      workspaceId: options.workspaceId || "teach-honcho-testing",
+      environment: options.environment || "production",
+    })
     const uploadResult = await uploadMessagesToHoncho({
       messages,
       sessionId,

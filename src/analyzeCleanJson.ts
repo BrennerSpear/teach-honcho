@@ -121,7 +121,8 @@ try {
 
   // Otherwise, try as ChatJSON format
   const chatData: ChatJSON = parsedData
-  const messages = extractVisibleMessages(chatData)
+  const extracted = extractVisibleMessages(chatData)
+  const messages = extracted.messages
 
   console.log(`\nAnalyzing ${messages.length} messages from ${filePath}\n`)
 

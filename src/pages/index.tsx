@@ -110,11 +110,25 @@ export default function Home() {
       // Handle both single chat and array of chats
       if (Array.isArray(result.data)) {
         // Add each conversation as a separate job
+        console.log(
+          "[Index Page] Processing multiple chats:",
+          result.data.length,
+        )
         for (const chat of result.data) {
+          console.log("[Index Page] Adding chat to queue:", {
+            title: chat.title,
+            create_time: chat.create_time,
+            messageCount: chat.messages?.length,
+          })
           uploadQueue.addJob(chat)
         }
       } else {
         // Single conversation
+        console.log("[Index Page] Processing single chat:", {
+          title: result.data.title,
+          create_time: result.data.create_time,
+          messageCount: result.data.messages?.length,
+        })
         uploadQueue.addJob(result.data)
       }
     }
@@ -319,23 +333,23 @@ export default function Home() {
                               Total Jobs
                             </div>
                           </div>
-                          <div className="rounded-lg bg-accent p-3 text-center">
-                            <div className="font-bold text-2xl text-primary">
+                          <div className="rounded-lg bg-secondary p-3 text-center">
+                            <div className="font-bold text-2xl text-secondary-foreground">
                               {
                                 uploadQueue.state.jobs.filter(
                                   (job) => job.status === "pending",
                                 ).length
                               }
                             </div>
-                            <div className="text-accent-foreground text-sm">
+                            <div className="text-secondary-foreground text-sm">
                               Pending
                             </div>
                           </div>
-                          <div className="rounded-lg bg-accent p-3 text-center">
-                            <div className="font-bold text-2xl text-primary">
+                          <div className="rounded-lg bg-success p-3 text-center">
+                            <div className="font-bold text-2xl text-primary-foreground">
                               {uploadQueue.state.completedJobs}
                             </div>
-                            <div className="text-accent-foreground text-sm">
+                            <div className="text-primary-foreground text-sm">
                               Completed
                             </div>
                           </div>
@@ -356,13 +370,13 @@ export default function Home() {
                               key={job.id}
                               className={`flex items-center justify-between rounded-lg border p-3 ${
                                 job.status === "completed"
-                                  ? "border-accent bg-accent"
+                                  ? "border-primary bg-primary/10"
                                   : job.status === "failed"
-                                    ? "border-destructive bg-destructive"
+                                    ? "border-destructive bg-destructive/10"
                                     : job.status === "uploading" ||
                                         job.status === "retrying"
                                       ? "border-primary bg-primary/10"
-                                      : "border-border bg-muted"
+                                      : "border-secondary bg-secondary/10"
                               }`}
                             >
                               <div className="flex-1">
@@ -373,9 +387,9 @@ export default function Home() {
                                   <span
                                     className={`rounded-full px-2 py-1 font-medium text-xs ${
                                       job.status === "completed"
-                                        ? "bg-accent-foreground text-accent"
+                                        ? "bg-primary text-primary-foreground"
                                         : job.status === "failed"
-                                          ? "bg-destructive-foreground text-destructive"
+                                          ? "bg-destructive text-destructive-foreground"
                                           : job.status === "uploading"
                                             ? "bg-primary text-primary-foreground"
                                             : job.status === "retrying"

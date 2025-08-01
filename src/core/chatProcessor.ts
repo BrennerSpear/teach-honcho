@@ -10,6 +10,8 @@ export interface ProcessedChat {
   messages: Array<{ author: string; content: string }>
   messageCount: number
   originalFormat: "array" | "chatgpt"
+  title?: string
+  create_time?: number
 }
 
 export interface ProcessChatResult {
@@ -26,6 +28,8 @@ export function processChatData(jsonData: UnknownJsonData): ProcessChatResult {
   try {
     let messages: Array<{ author: string; content: string }>
     let originalFormat: "array" | "chatgpt"
+    let chatTitle: string | undefined
+    let chatCreateTime: number | undefined
 
     // Handle different input formats
     if (Array.isArray(jsonData)) {
@@ -41,12 +45,14 @@ export function processChatData(jsonData: UnknownJsonData): ProcessChatResult {
         // Process array of ChatGPT conversation objects - each conversation separately
         const conversationResults: ProcessedChat[] = []
         for (const chatObject of jsonData) {
-          const chatMessages = extractVisibleMessages(chatObject as ChatJSON)
-          if (chatMessages.length > 0) {
+          const extracted = extractVisibleMessages(chatObject as ChatJSON)
+          if (extracted.messages.length > 0) {
             conversationResults.push({
-              messages: chatMessages,
-              messageCount: chatMessages.length,
+              messages: extracted.messages,
+              messageCount: extracted.messages.length,
               originalFormat: "chatgpt",
+              title: extracted.title,
+              create_time: extracted.create_time,
             })
           }
         }
@@ -104,8 +110,11 @@ export function processChatData(jsonData: UnknownJsonData): ProcessChatResult {
       }
     } else {
       // Extract messages from single ChatGPT conversation object
-      messages = extractVisibleMessages(jsonData as ChatJSON)
+      const extracted = extractVisibleMessages(jsonData as ChatJSON)
+      messages = extracted.messages
       originalFormat = "chatgpt"
+      chatTitle = extracted.title
+      chatCreateTime = extracted.create_time
     }
 
     if (messages.length === 0) {
@@ -122,6 +131,8 @@ export function processChatData(jsonData: UnknownJsonData): ProcessChatResult {
         messages,
         messageCount: messages.length,
         originalFormat,
+        title: chatTitle,
+        create_time: chatCreateTime,
       },
     }
   } catch (error) {

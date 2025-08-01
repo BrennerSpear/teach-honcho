@@ -50,10 +50,33 @@ function uploadQueueReducer(
 ): UploadQueueState {
   switch (action.type) {
     case "ADD_JOB": {
+      // Generate session ID from title and create_time if not provided
+      let sessionId = action.payload.sessionId
+
+      if (
+        !sessionId &&
+        action.payload.chat.title &&
+        action.payload.chat.create_time
+      ) {
+        const cleanTitle = action.payload.chat.title
+          .replace(/[^a-zA-Z0-9-_\s]/g, "")
+          .replace(/\s+/g, "-")
+        // Convert timestamp to integer (remove decimal) to match Honcho's pattern
+        const timestamp = Math.floor(action.payload.chat.create_time)
+        sessionId = `${cleanTitle}-${timestamp}`
+        console.log("[useUploadQueue] Generated session ID:", {
+          originalTitle: action.payload.chat.title,
+          cleanTitle,
+          create_time: action.payload.chat.create_time,
+          timestamp,
+          sessionId,
+        })
+      }
+
       const job: UploadJob = {
         id: `job-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         chat: action.payload.chat,
-        sessionId: action.payload.sessionId,
+        sessionId,
         status: "pending",
         progress: 0,
         retryCount: 0,
@@ -158,6 +181,15 @@ export function useUploadQueue(options: UseUploadQueueOptions) {
       updateJob(job.id, { status: "uploading", progress: 0 })
 
       try {
+        console.log("[useUploadQueue] Processing job:", {
+          jobId: job.id,
+          sessionId: job.sessionId,
+          hasSessionId: !!job.sessionId,
+          chatTitle: job.chat.title,
+          chatCreateTime: job.chat.create_time,
+          messageCount: job.chat.messages?.length,
+        })
+
         const result = await uploadChatMutation.mutateAsync({
           messages: job.chat.messages,
           sessionId: job.sessionId,
@@ -233,6 +265,13 @@ export function useUploadQueue(options: UseUploadQueueOptions) {
   }, [state.jobs, processJob, options])
 
   const addJob = useCallback((chat: ProcessedChat, sessionId?: string) => {
+    console.log("[useUploadQueue] Adding job to queue:", {
+      chatTitle: chat.title,
+      chatCreateTime: chat.create_time,
+      providedSessionId: sessionId,
+      messageCount: chat.messages?.length,
+    })
+
     dispatch({
       type: "ADD_JOB",
       payload: { chat, sessionId },
