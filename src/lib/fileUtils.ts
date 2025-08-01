@@ -1,6 +1,6 @@
 export const FILE_SIZE_LIMITS = {
-  MAX_SIZE_MB: 100,
-  WARNING_SIZE_MB: 50,
+  MAX_SIZE_MB: 200,
+  WARNING_SIZE_MB: 100,
   SAFE_SIZE_MB: 10,
 } as const
 

@@ -172,9 +172,8 @@ export default function Home() {
                 Uploader
               </h1>
               <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-                Transform your ChatGPT conversations into persistent AI
-                memories. Upload your exports to Honcho and explore AI
-                representations.
+                Give your ChatGPT conversations to Honcho to explore a derived
+                representations of you.
               </p>
             </div>
           </div>
@@ -184,18 +183,10 @@ export default function Home() {
             <div
               className={`rounded-lg border bg-card p-8 shadow-sm ${isConnected ? "border-2 border-primary" : "border-border"}`}
             >
-              {isConnected && (
-                <div className="mb-4 flex items-center gap-2 rounded-lg border border-green-200 p-3">
-                  <div className="h-2 w-2 rounded-full bg-green-400" />
-                  <span className="font-medium text-green-800 text-sm">
-                    Connected to Honcho
-                  </span>
-                </div>
-              )}
-
               <h2 className="mb-6 font-bold text-2xl text-foreground">
                 Getting Started
               </h2>
+
               <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                 <div>
                   <h3 className="mb-3 font-semibold text-foreground text-lg">
@@ -214,12 +205,7 @@ export default function Home() {
                     </a>
                     .
                   </p>
-                  <div className="mb-4 rounded-lg border border-border bg-muted p-4">
-                    <p className="text-foreground text-sm">
-                      <strong>Important:</strong> Keep your API key secure and
-                      never share it publicly.
-                    </p>
-                  </div>
+
                   <Button
                     onClick={handleOpenApiKeyDialog}
                     className="w-full sm:w-auto"
@@ -232,19 +218,21 @@ export default function Home() {
                     2. Export from ChatGPT
                   </h3>
                   <p className="mb-4 text-muted-foreground">
-                    In ChatGPT, go to Settings → Data Export → Export data.
-                    Download the conversations.json file from your export.
+                    In ChatGPT, go to Settings → Data Controls → Export data. It
+                    will be emailed to you. unzip the file, and upload the{" "}
+                    <span className="font-mono">conversations.json</span> file
                   </p>
-                  <div className="rounded-lg border border-border bg-muted p-4">
-                    <p className="text-foreground text-sm">
-                      <strong>Note:</strong> Large files (over 50MB) will show a
-                      warning but can still be processed.
-                    </p>
-                  </div>
                 </div>
               </div>
             </div>
-
+            {isConnected && (
+              <div className="mt-4 flex items-center gap-2 rounded-lg border border-green-200 p-3">
+                <div className="h-2 w-2 rounded-full bg-green-400" />
+                <span className="font-medium text-green-800 text-sm">
+                  Connected to Honcho
+                </span>
+              </div>
+            )}
             {/* Main Content */}
             {apiKey && isConnected && (
               <>
@@ -447,9 +435,17 @@ export default function Home() {
                     {/* Queue Monitoring - Always show when connected */}
                     <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
                       <div className="mb-4 flex items-center justify-between">
-                        <h2 className="font-semibold text-foreground text-xl">
-                          Background Processing Status
-                        </h2>
+                        <div>
+                          <h2 className="font-semibold text-foreground text-xl">
+                            Background Processing Status
+                          </h2>
+                          <p className="mr-4 text-muted-foreground text-sm">
+                            Now that your conversations have been uploaded,
+                            Honcho will process your conversations in the
+                            background. Honcho's representation of you will be
+                            complete when this process is complete
+                          </p>
+                        </div>
                         <Button
                           variant={
                             queueMonitoringEnabled ? "secondary" : "default"
@@ -472,20 +468,57 @@ export default function Home() {
                   </>
                 ) : (
                   /* Representation Tab */
-                  <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-                    <h2 className="mb-4 font-semibold text-foreground text-xl">
-                      AI Representations
-                    </h2>
-                    <p className="mb-6 text-muted-foreground">
-                      View AI representations from Honcho based on your uploaded
-                      conversations.
-                    </p>
-                    <RepresentationViewer
-                      apiKey={apiKey}
-                      workspaceId="teach-honcho"
-                      environment="production"
-                    />
-                  </div>
+                  <>
+                    {/* Background Processing Status */}
+                    <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+                      <div className="mb-4 flex items-center justify-between">
+                        <div>
+                          <h2 className="font-semibold text-foreground text-xl">
+                            Background Processing Status
+                          </h2>
+                          <p className="mr-4 text-muted-foreground text-sm">
+                            Now that your conversations have been uploaded,
+                            Honcho will process your conversations in the
+                            background. Honcho's representation of you will be
+                            complete when this process is complete
+                          </p>
+                        </div>
+                        <Button
+                          variant={
+                            queueMonitoringEnabled ? "secondary" : "default"
+                          }
+                          onClick={handleToggleQueueMonitoring}
+                          size="sm"
+                        >
+                          {queueMonitoringEnabled
+                            ? "Stop Monitoring"
+                            : "Start Monitoring"}
+                        </Button>
+                      </div>
+                      <QueueMonitor
+                        apiKey={apiKey}
+                        workspaceId="teach-honcho"
+                        environment="production"
+                        enabled={queueMonitoringEnabled}
+                      />
+                    </div>
+
+                    {/* AI Representations */}
+                    <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+                      <h2 className="mb-4 font-semibold text-foreground text-xl">
+                        AI Representations
+                      </h2>
+                      <p className="mb-6 text-muted-foreground">
+                        View AI representations from Honcho based on your uploaded
+                        conversations.
+                      </p>
+                      <RepresentationViewer
+                        apiKey={apiKey}
+                        workspaceId="teach-honcho"
+                        environment="production"
+                      />
+                    </div>
+                  </>
                 )}
               </>
             )}

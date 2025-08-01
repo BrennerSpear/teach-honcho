@@ -210,7 +210,8 @@ export function FileUploader({
                   Drop your ChatGPT export here
                 </p>
                 <p className="text-muted-foreground text-sm">
-                  or click to browse for a JSON file
+                  or click to browse for the{" "}
+                  <span className="font-mono">conversations.json</span> file
                 </p>
               </div>
               <div className="text-muted-foreground text-xs">
