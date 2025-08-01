@@ -6,6 +6,18 @@ import { type ChatJSON, extractVisibleMessages } from "../utils/extractMessages"
  * Perfect for frontend/Lambda usage
  */
 
+interface MessageItem {
+  author?: string
+  content?: string
+  role?: string
+  from?: string
+  text?: string
+}
+
+interface ChatGPTConversation {
+  mapping: object
+}
+
 export interface ProcessedChat {
   messages: Array<{ author: string; content: string }>
   messageCount: number
@@ -40,7 +52,7 @@ export function processChatData(jsonData: UnknownJsonData): ProcessChatResult {
         firstItem &&
         typeof firstItem === "object" &&
         "mapping" in firstItem &&
-        typeof (firstItem as any).mapping === "object"
+        typeof (firstItem as ChatGPTConversation).mapping === "object"
       ) {
         // Process array of ChatGPT conversation objects - each conversation separately
         const conversationResults: ProcessedChat[] = []
@@ -71,7 +83,7 @@ export function processChatData(jsonData: UnknownJsonData): ProcessChatResult {
         }
       } else {
         // Process array of direct message objects
-        messages = jsonData.map((item: any) => {
+        messages = jsonData.map((item: MessageItem) => {
           if (!item || typeof item !== "object") {
             throw new Error("Invalid message item in array")
           }
@@ -179,7 +191,7 @@ export function validateChatGPTExport(jsonData: UnknownJsonData): {
       firstItem &&
       typeof firstItem === "object" &&
       "mapping" in firstItem &&
-      typeof (firstItem as any).mapping === "object"
+      typeof (firstItem as ChatGPTConversation).mapping === "object"
     ) {
       return {
         valid: true,
@@ -192,12 +204,12 @@ export function validateChatGPTExport(jsonData: UnknownJsonData): {
       (item) =>
         item &&
         typeof item === "object" &&
-        ((typeof (item as any).author === "string" &&
-          typeof (item as any).content === "string") ||
-          (typeof (item as any).role === "string" &&
-            typeof (item as any).content === "string") ||
-          (typeof (item as any).from === "string" &&
-            typeof (item as any).text === "string")),
+        ((typeof (item as MessageItem).author === "string" &&
+          typeof (item as MessageItem).content === "string") ||
+          (typeof (item as MessageItem).role === "string" &&
+            typeof (item as MessageItem).content === "string") ||
+          (typeof (item as MessageItem).from === "string" &&
+            typeof (item as MessageItem).text === "string")),
     )
 
     if (hasValidMessages) {

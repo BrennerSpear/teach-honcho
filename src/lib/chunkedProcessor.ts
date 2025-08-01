@@ -4,7 +4,10 @@ import type { ProcessedChat } from "~/core/chatProcessor"
 export interface ChunkProcessingOptions {
   chunkSize?: number
   onProgress?: (processed: number, total: number) => void
-  onChunkComplete?: (chunkIndex: number, result: ProcessedChat) => void
+  onChunkComplete?: (
+    chunkIndex: number,
+    result: ProcessedChat | ProcessedChat[],
+  ) => void
 }
 
 export interface ChunkProcessingResult {
@@ -60,11 +63,20 @@ export async function processInChunks(
       }
 
       // Accumulate messages from this chunk
-      processedMessages.push(...chunkResult.data.messages)
+      const chunkData = chunkResult.data
+      if (Array.isArray(chunkData)) {
+        // Handle array of ProcessedChat - combine all messages
+        for (const chat of chunkData) {
+          processedMessages.push(...chat.messages)
+        }
+      } else {
+        // Handle single ProcessedChat
+        processedMessages.push(...chunkData.messages)
+      }
       processedChunks++
 
       // Notify about chunk completion
-      onChunkComplete?.(i, chunkResult.data)
+      onChunkComplete?.(i, chunkData)
 
       // Update progress
       const processedItems = Math.min(endIndex, totalItems)

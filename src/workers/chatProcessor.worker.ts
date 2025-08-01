@@ -16,7 +16,7 @@ export interface WorkerResponse {
   type: "PROCESS_CHAT_DATA_SUCCESS" | "PROCESS_CHAT_DATA_ERROR"
   payload: {
     id: string
-    result?: ProcessedChat
+    result?: ProcessedChat | ProcessedChat[]
     error?: string
   }
 }

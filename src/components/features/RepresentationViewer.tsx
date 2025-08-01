@@ -32,7 +32,7 @@ function RepresentationContent({
     }
   }
 
-  const copyFullRepresentation = async () => {
+  const _copyFullRepresentation = async () => {
     const formattedRepresentation = JSON.stringify(representation, null, 2)
     await copyToClipboard(formattedRepresentation, "full")
   }

@@ -24,8 +24,7 @@ type TabType = "upload" | "representation"
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<TabType>("upload")
-  const { apiKey, saveApiKey, getObfuscatedKey, clearApiKey, isLoaded } =
-    useApiKey()
+  const { apiKey, saveApiKey, isLoaded } = useApiKey()
   const [tempApiKey, setTempApiKey] = useState("")
   const [isApiKeyDialogOpen, setIsApiKeyDialogOpen] = useState(false)
   const [queueMonitoringEnabled, setQueueMonitoringEnabled] = useState(false)
@@ -150,7 +149,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Honcho ChatGPT Uploader</title>
+        <title>Teach Honcho</title>
         <meta
           name="description"
           content="Upload your ChatGPT conversations to Honcho for AI memory management"
@@ -166,10 +165,7 @@ export default function Home() {
             </div>
             <div className="text-center">
               <h1 className="mb-4 font-extrabold text-4xl text-foreground tracking-tight sm:text-5xl">
-                Honcho
-                <span className="text-primary"> ChatGPT</span>
-                <br />
-                Uploader
+                Teach Honcho
               </h1>
               <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
                 Give your ChatGPT conversations to Honcho to explore a derived

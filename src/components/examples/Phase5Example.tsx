@@ -84,10 +84,14 @@ export function Phase5Example() {
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
-            <label className="mb-2 block font-medium text-gray-700 text-sm">
+            <label
+              htmlFor="peer-id"
+              className="mb-2 block font-medium text-gray-700 text-sm"
+            >
               Peer ID (required)
             </label>
             <input
+              id="peer-id"
               type="text"
               value={selectedPeerId}
               onChange={(e) => setSelectedPeerId(e.target.value)}
@@ -97,10 +101,14 @@ export function Phase5Example() {
           </div>
 
           <div>
-            <label className="mb-2 block font-medium text-gray-700 text-sm">
+            <label
+              htmlFor="target-peer-id"
+              className="mb-2 block font-medium text-gray-700 text-sm"
+            >
               Target Peer ID (optional)
             </label>
             <input
+              id="target-peer-id"
               type="text"
               value={targetPeerId}
               onChange={(e) => setTargetPeerId(e.target.value)}
@@ -113,8 +121,6 @@ export function Phase5Example() {
         {selectedPeerId && (
           <RepresentationViewer
             apiKey={apiKey}
-            peerId={selectedPeerId}
-            targetPeerId={targetPeerId || undefined}
             workspaceId="teach-honcho-testing"
             environment="production"
           />

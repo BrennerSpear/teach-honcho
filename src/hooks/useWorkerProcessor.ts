@@ -9,7 +9,7 @@ import type {
 
 interface WorkerProcessorResult {
   success: boolean
-  data?: ProcessedChat
+  data?: ProcessedChat | ProcessedChat[]
   error?: string
 }
 

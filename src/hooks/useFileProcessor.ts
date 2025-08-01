@@ -97,7 +97,7 @@ export function useFileProcessor() {
         setState((prev) => ({
           ...prev,
           isProcessing: false,
-          processedChats: result.data,
+          processedChats: result.data || null,
           originalChatCount: Array.isArray(result.data)
             ? result.data.length
             : 1,

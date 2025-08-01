@@ -31,10 +31,23 @@ export async function handleChatUpload(jsonData: UnknownJsonData) {
     throw new Error(result.message)
   }
 
-  return {
-    messages: result.data?.messages,
-    messagesCount: result.data?.messageCount,
-    originalFormat: result.data?.originalFormat,
+  const data = result.data
+  if (Array.isArray(data)) {
+    // Handle array of ProcessedChat - combine all messages
+    const allMessages = data.flatMap((chat) => chat.messages)
+    const totalCount = data.reduce((sum, chat) => sum + chat.messageCount, 0)
+    return {
+      messages: allMessages,
+      messagesCount: totalCount,
+      originalFormat: data[0]?.originalFormat,
+    }
+  } else {
+    // Handle single ProcessedChat
+    return {
+      messages: data?.messages,
+      messagesCount: data?.messageCount,
+      originalFormat: data?.originalFormat,
+    }
   }
 }
 
@@ -74,12 +87,27 @@ export async function processAndUploadChat(
   }
 
   // Step 2: Upload to Honcho
-  if (!processResult.data?.messages) {
+  const data = processResult.data
+  let messagesToUpload: Array<{ author: string; content: string }>
+  let messageCount: number
+  let originalFormat: "array" | "chatgpt" | undefined
+
+  if (Array.isArray(data)) {
+    // Handle array of ProcessedChat - combine all messages
+    messagesToUpload = data.flatMap((chat) => chat.messages)
+    messageCount = data.reduce((sum, chat) => sum + chat.messageCount, 0)
+    originalFormat = data[0]?.originalFormat
+  } else if (data?.messages) {
+    // Handle single ProcessedChat
+    messagesToUpload = data.messages
+    messageCount = data.messageCount
+    originalFormat = data.originalFormat
+  } else {
     throw new Error("No messages found after processing")
   }
 
   const uploadResult = await uploadMessagesToHoncho({
-    messages: processResult.data.messages,
+    messages: messagesToUpload,
     sessionId,
     apiKey,
   })
@@ -89,8 +117,8 @@ export async function processAndUploadChat(
   }
 
   return {
-    processedMessages: processResult.data?.messageCount,
-    originalFormat: processResult.data?.originalFormat,
+    processedMessages: messageCount,
+    originalFormat: originalFormat,
     sessionId: uploadResult.sessionId,
     uniqueAuthors: uploadResult.uniqueAuthors,
   }
@@ -129,11 +157,28 @@ export async function processBatchChats(
 
     try {
       const result = processChatData(data)
+      const processedData = result.data
+      let messages: Array<{ author: string; content: string }> | undefined
+      let messageCount: number | undefined
+
+      if (Array.isArray(processedData)) {
+        // Handle array of ProcessedChat - combine all messages
+        messages = processedData.flatMap((chat) => chat.messages)
+        messageCount = processedData.reduce(
+          (sum, chat) => sum + chat.messageCount,
+          0,
+        )
+      } else if (processedData) {
+        // Handle single ProcessedChat
+        messages = processedData.messages
+        messageCount = processedData.messageCount
+      }
+
       results.push({
         id,
         success: result.success,
-        messages: result.data?.messages,
-        messageCount: result.data?.messageCount,
+        messages,
+        messageCount,
         error: result.success ? undefined : result.message,
       })
 
