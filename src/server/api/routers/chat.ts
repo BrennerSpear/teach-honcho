@@ -135,6 +135,7 @@ export const chatRouter = createTRPCRouter({
             error: error instanceof Error ? error.message : "Unknown error",
           })
         }
+        
 
         // Add small delay between uploads to prevent rate limiting
         await new Promise((resolve) => setTimeout(resolve, 100))

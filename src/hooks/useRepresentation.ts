@@ -1,11 +1,16 @@
 "use client"
 
 import { useCallback, useState } from "react"
-import {
-  getWorkingRepresentation,
-  type WorkingRepresentation,
-  type WorkingRepresentationOptions,
-} from "~/core/honchoClient"
+import type { WorkingRepresentation } from "~/core/honchoClient"
+import { api } from "~/utils/api"
+
+interface RepresentationOptions {
+  apiKey: string
+  peerId: string
+  targetPeerId?: string
+  workspaceId?: string
+  environment?: "local" | "production" | "demo"
+}
 
 interface RepresentationState {
   isLoading: boolean
@@ -22,8 +27,10 @@ export function useRepresentation() {
     lastFetched: null,
   })
 
+  const utils = api.useUtils()
+
   const fetchRepresentation = useCallback(
-    async (options: WorkingRepresentationOptions) => {
+    async (options: RepresentationOptions) => {
       setState((prev) => ({
         ...prev,
         isLoading: true,
@@ -31,9 +38,15 @@ export function useRepresentation() {
       }))
 
       try {
-        const result = await getWorkingRepresentation(options)
+        const result = await utils.chat.getRepresentation.fetch({
+          peerId: options.peerId,
+          targetPeerId: options.targetPeerId,
+          apiKey: options.apiKey,
+          workspaceId: options.workspaceId || "teach-honcho",
+          environment: options.environment || "production",
+        })
 
-        if (result.success && result.representation) {
+        if (result?.representation) {
           setState({
             isLoading: false,
             error: null,
@@ -42,8 +55,7 @@ export function useRepresentation() {
           })
           return { success: true, representation: result.representation }
         } else {
-          const errorMessage =
-            result.message || "Failed to fetch representation"
+          const errorMessage = "No representation data received"
           setState((prev) => ({
             ...prev,
             isLoading: false,
@@ -62,7 +74,7 @@ export function useRepresentation() {
         return { success: false, error: errorMessage }
       }
     },
-    [],
+    [utils],
   )
 
   const reset = useCallback(() => {
@@ -75,7 +87,7 @@ export function useRepresentation() {
   }, [])
 
   const refresh = useCallback(
-    async (options: WorkingRepresentationOptions) => {
+    async (options: RepresentationOptions) => {
       return await fetchRepresentation(options)
     },
     [fetchRepresentation],
