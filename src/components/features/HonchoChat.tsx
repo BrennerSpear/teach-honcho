@@ -39,7 +39,7 @@ export function HonchoChat({
     if (!question.trim() || isAsking) return
 
     const questionMessage: ChatMessage = {
-      id: Date.now().toString() + "-question",
+      id: `${Date.now().toString()}-question`,
       type: "question",
       content: question.trim(),
       timestamp: new Date(),
@@ -58,7 +58,7 @@ export function HonchoChat({
       })
 
       const answerMessage: ChatMessage = {
-        id: Date.now().toString() + "-answer",
+        id: `${Date.now().toString()}-answer`,
         type: "answer",
         content: result.answer || "No response received",
         timestamp: new Date(),
@@ -66,7 +66,7 @@ export function HonchoChat({
       setMessages((prev) => [...prev, answerMessage])
     } catch (error) {
       const errorMessage: ChatMessage = {
-        id: Date.now().toString() + "-error",
+        id: `${Date.now().toString()}-error`,
         type: "answer",
         content: `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
         timestamp: new Date(),
@@ -111,7 +111,7 @@ export function HonchoChat({
                 className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${
                   message.type === "question"
                     ? "bg-primary text-primary-foreground"
-                    : "bg-background text-foreground border border-border"
+                    : "border border-border bg-background text-foreground"
                 }`}
               >
                 <p className="whitespace-pre-wrap">{message.content}</p>
@@ -142,10 +142,13 @@ export function HonchoChat({
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder="Ask Honcho a question about yourself..."
-            className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:font-medium file:text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             disabled={isAsking || !apiKey}
           />
-          <Button type="submit" disabled={!question.trim() || isAsking || !apiKey}>
+          <Button
+            type="submit"
+            disabled={!question.trim() || isAsking || !apiKey}
+          >
             {isAsking ? <LoadingSpinner size="sm" /> : "Ask"}
           </Button>
         </div>

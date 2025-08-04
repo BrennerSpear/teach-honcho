@@ -501,10 +501,10 @@ export default function Home() {
 
                     {/* AI Representations */}
                     <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-                      <h2 className="mb-4 font-semibold text-foreground text-xl text-center">
+                      <h2 className="mb-4 text-center font-semibold text-foreground text-xl">
                         Honcho's Representation of You
                       </h2>
-                      <p className="mb-6 text-muted-foreground text-center">
+                      <p className="mb-6 text-center text-muted-foreground">
                         Honcho's representation of you is a derived
                         representation of you based on your uploaded
                         conversations.

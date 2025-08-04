@@ -120,7 +120,7 @@ export function QueueMonitor({
     return (
       <div
         className={cn(
-          "rounded-lg border border-accent bg-accent p-4",
+          "rounded-lg border border-accent bg-primary/10 p-4",
           className,
         )}
       >

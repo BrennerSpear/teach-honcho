@@ -259,7 +259,7 @@ export function RepresentationViewer({
 
       {/* Chat Section - Always visible when API key is available */}
       {apiKey && (
-        <div className="border-t border-border pt-6">
+        <div className="border-border border-t pt-6">
           <HonchoChat
             apiKey={apiKey}
             workspaceId={workspaceId}
