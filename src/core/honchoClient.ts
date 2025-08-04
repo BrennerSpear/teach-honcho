@@ -154,6 +154,55 @@ export interface ConnectionTestResult {
   apiKeyValid: boolean
 }
 
+export interface AskQuestionOptions extends HonchoClientOptions {
+  peerId: string
+  question: string
+  targetPeerId?: string
+  sessionId?: string
+}
+
+export interface QuestionResult {
+  success: boolean
+  message?: string
+  answer?: string
+}
+
+/**
+ * Ask Honcho a question about a peer's representation
+ * Pure function perfect for Lambda/frontend usage
+ */
+export async function askHonchoQuestion(
+  options: AskQuestionOptions,
+): Promise<QuestionResult> {
+  try {
+    const honcho = new Honcho({
+      apiKey: options.apiKey || process.env.HONCHO_API_KEY,
+      workspaceId: options.workspaceId || "teach-honcho",
+      environment: options.environment || "production",
+    })
+
+    // Get the peer
+    const peer = honcho.peer(options.peerId)
+
+    // Ask the question using the chat method
+    const response = await peer.chat(options.question, {
+      target: options.targetPeerId,
+      sessionId: options.sessionId,
+    })
+
+    return {
+      success: true,
+      answer: response || "No response received",
+    }
+  } catch (error) {
+    return {
+      success: false,
+      message:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    }
+  }
+}
+
 /**
  * Retrieves working representation from Honcho (no file operations)
  * Pure function perfect for Lambda/frontend usage

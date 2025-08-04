@@ -1,6 +1,10 @@
 import { Honcho } from "@honcho-ai/sdk"
 import { z } from "zod"
-import { getWorkingRepresentation, uploadMessagesToHoncho } from "~/core"
+import {
+  askHonchoQuestion,
+  getWorkingRepresentation,
+  uploadMessagesToHoncho,
+} from "~/core"
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc"
 
 // Input validation schemas
@@ -46,6 +50,16 @@ const queueStatusSchema = z.object({
   observerId: z.string().optional(),
   senderId: z.string().optional(),
   sessionId: z.string().optional(),
+})
+
+const askQuestionSchema = z.object({
+  peerId: z.string(),
+  question: z.string().min(1, "Question cannot be empty"),
+  targetPeerId: z.string().optional(),
+  sessionId: z.string().optional(),
+  apiKey: z.string(),
+  workspaceId: z.string().optional(),
+  environment: z.enum(["local", "production", "demo"]).optional(),
 })
 
 export const chatRouter = createTRPCRouter({
@@ -269,6 +283,36 @@ export const chatRouter = createTRPCRouter({
       } catch (error) {
         throw new Error(
           `Failed to get queue status: ${error instanceof Error ? error.message : "Unknown error"}`,
+        )
+      }
+    }),
+
+  // Ask Honcho a question about a peer's representation
+  askQuestion: publicProcedure
+    .input(askQuestionSchema)
+    .query(async ({ input }) => {
+      try {
+        const result = await askHonchoQuestion({
+          peerId: input.peerId,
+          question: input.question,
+          targetPeerId: input.targetPeerId,
+          sessionId: input.sessionId,
+          apiKey: input.apiKey,
+          workspaceId: input.workspaceId || "teach-honcho",
+          environment: input.environment || "production",
+        })
+
+        if (!result.success) {
+          throw new Error(result.message || "Failed to ask question")
+        }
+
+        return {
+          answer: result.answer,
+          success: true,
+        }
+      } catch (error) {
+        throw new Error(
+          `Failed to ask question: ${error instanceof Error ? error.message : "Unknown error"}`,
         )
       }
     }),
