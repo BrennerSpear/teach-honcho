@@ -21,7 +21,7 @@
     "get:representation": "dotenvx run -- tsx cli/getRepresentation.ts"
   },
   "dependencies": {
-    "@honcho-ai/sdk": "^1.2.1",
+    "@honcho-ai/sdk": "^1.4.0",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-collapsible": "^1.1.11",
     "@radix-ui/react-dialog": "^1.1.14",

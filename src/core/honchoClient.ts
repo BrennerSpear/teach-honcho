@@ -60,7 +60,7 @@ export async function uploadMessagesToHoncho(
     })
 
     // Create or retrieve the session - this is required before adding messages
-    const session = honcho.session(sessionId, {
+    const session = await honcho.session(sessionId, {
       config: {
         observe_others: false,
         observe_me: true,
@@ -81,7 +81,7 @@ export async function uploadMessagesToHoncho(
     const peers: Record<string, Peer> = {}
 
     for (const author of uniqueAuthors) {
-      peers[author] = honcho.peer(author)
+      peers[author] = await honcho.peer(author)
     }
 
     // Add peers to session
@@ -182,7 +182,7 @@ export async function askHonchoQuestion(
     })
 
     // Get the peer
-    const peer = honcho.peer(options.peerId)
+    const peer = await honcho.peer(options.peerId)
 
     // Ask the question using the chat method
     const response = await peer.chat(options.question, {
@@ -218,7 +218,7 @@ export async function getWorkingRepresentation(
     })
 
     // Get the peer
-    const peer = honcho.peer(options.peerId)
+    const peer = await honcho.peer(options.peerId)
 
     // Use the chat method to query the representation
     const query = options.targetPeerId
